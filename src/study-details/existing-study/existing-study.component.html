@@ -1,0 +1,139 @@
+<div class="input-group mb-3">
+  <span class="input-group-text" id="inputGroup-sizing-sm">
+    <i class="bi bi-search"></i>
+  </span>
+  <input
+    type="text"
+    class="form-control"
+    [(ngModel)]="searchQuery"
+    placeholder="Search by Study ID or Name"
+    (ngModelChange)="filterStudies()"
+  />
+</div>
+
+<!-- Toggle Button for enabling/disabling form fields -->
+
+
+<!-- Table to display Study IDs, their names, and their status -->
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Existing Studies</h5>
+    <button 
+      class="btn btn-outline-light btn-sm" 
+      (click)="clearSelection()" 
+      title="Refresh and clear selection"
+    >
+      <i class="bi bi-arrow-clockwise"></i>
+    </button>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Study ID</th>
+          <th>Study Name</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let study of filteredStudies">
+          <tr
+          *ngIf="isStudyVisible(study)"
+  class="cursor-pointer"
+  (click)="onSelectStudy(study)"
+          >
+            <td>{{ study.studyId }}</td>
+            <td>{{ study.studyName }}</td>
+            <td>
+              <span
+                [ngClass]="{
+                  'text-success': study.status === 'inProgress',
+                  'text-danger': study.status === 'notApplicable'
+                }"
+              >
+                {{ study.status === 'inProgress' ? 'In Progress' : 'NA' }}
+              </span>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Study Form -->
+<div *ngIf="studyForm && selectedStudy !== null" class="mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-info text-white" style="position: relative;">
+      <h5>Study Form for {{ selectedStudy?.studyId }}</h5>
+      <div class="form-check form-switch float-end" style="position: absolute; top: 10px; right: 10px;">
+        <label class="form-check-label" for="toggleForm">Edit Mode</label>
+        <input 
+          class="form-check-input" 
+          type="checkbox" 
+          id="toggleForm" 
+          [(ngModel)]="isEditable" 
+          (change)="onToggleEditMode()" />
+      </div>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="studyForm" (ngSubmit)="onSubmit()">
+        <!-- Study ID -->
+        <div class="form-group bordered-block">
+          <label for="studyId" class="col-form-label fw-bold">Study ID:</label>
+          <input id="studyId" formControlName="studyId" class="form-control input-block" [disabled]="true" />
+        </div>
+
+        <!-- Study Name (Read-Only) -->
+        <div class="form-group bordered-block">
+          <label for="studyName" class="col-form-label fw-bold">Study Name:</label>
+          <input
+            id="studyName"
+            formControlName="studyName"
+            class="form-control input-block"
+            [disabled]="!isEditable"/>
+        </div>
+        
+        <!-- Dynamic Fields -->
+        <div class="form-container scrollable-form-container">
+          <div *ngFor="let field of selectedStudy.fields" class="form-group bordered-block">
+            <label class="col-form-label fw-bold">{{ field.label }}:</label>
+            <div class="field-container">
+              <div class="dropdown-container d-flex align-items-center">
+                <select [formControlName]="field.key" class="form-control input-block me-2" [disabled]="!isEditable">
+                  <option *ngFor="let option of statusOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+                <i
+                  *ngIf="studyForm.get(field.key)?.value"
+                  [ngClass]="{
+                    'bi-check-circle': studyForm.get(field.key)?.value === 'complete',
+                    'bi-clock': studyForm.get(field.key)?.value === 'inProgress',
+                    'bi-exclamation-circle': studyForm.get(field.key)?.value === 'notStarted',
+                    'bi-x-circle': studyForm.get(field.key)?.value === 'notApplicable'
+                  }"
+                  class="status-icon"
+                ></i>
+              </div>
+              <textarea
+                placeholder="Add comment"
+                formControlName="{{ field.key + '_comment' }}"
+                class="form-control text-area-block"
+                [disabled]="!isEditable"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button type="submit" [disabled]="studyForm.invalid || !isEditable" class="btn btn-primary mt-3 float-end">
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,138 @@
+.bi-download.disabled {
+    pointer-events: none;  /* Disable click interaction */
+    opacity: 0.5;  /* Make the icon appear faded */
+  }
+  .disabled-row {
+    opacity: 0.5;  /* Make the entire row appear faded */
+    pointer-events: none;  /* Disable all interactions with the row */
+  }
+  .card {
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 10px;
+  }
+  
+  .card-header {
+    background-color: #f8f9fa;
+  }
+  
+  .card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group.bordered-block {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .form-container {
+    border-top: solid;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  
+  .field-container {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .dropdown-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .input-block, .text-area-block {
+    width: 100%;
+  }
+  
+  .text-area-block {
+    min-height: 100px;
+    resize: vertical;
+  }
+  
+  .status-icon {
+    font-size: 20px;
+    margin-left: 10px;
+    position: absolute;
+    top: 12%;
+    right: 15px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Ensure the icon doesn't interfere with selecting options */
+  }
+  
+  .bi-exclamation-circle.text-warning {
+    color: #ffc107;
+  }
+  
+  .bi-arrow-repeat.text-primary {
+    color: #0d6efd;
+  }
+  
+  .bi-check-circle.text-success {
+    color: #28a745;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+  
+  .text-area-block {
+    height: 100px;
+  }
+  
+  .form-group.bordered-block {
+    margin-bottom: 16px;
+  }
+  .scrollable-form-container {
+    max-height: 400px;
+    overflow-y: auto;  
+    padding-right: 10px; 
+  }
+  .status-icon {
+    font-size: 1.5rem;  /* Adjust size */
+    color: #007bff;     /* Default color */
+  }
+  
+  .bi-check-circle {
+    color: green;
+  }
+  
+  .bi-clock {
+    color: orange;
+  }
+  
+  .bi-x-circle {
+    color: red;
+  }
+  // .status-icon {
+  //   font-size: 1.5rem;  
+  //   color: #007bff;    
+  // }
+  
+  
+  
+  
+  

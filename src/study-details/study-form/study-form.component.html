@@ -1,0 +1,70 @@
+<div class="card">
+  <div class="card-header">
+    <h5>Study Form</h5>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="studyForm" (ngSubmit)="onSubmit()">
+      <!-- Study ID -->
+      <div class="form-group bordered-block">
+        <label for="studyId" class="col-form-label fw-bold">Study ID:</label>
+        <input id="studyId" formControlName="studyId" class="form-control input-block" />
+        <div *ngIf="studyForm.controls['studyId'].hasError('studyIdExists')" class="text-danger">
+          Study ID already exists.
+        </div>
+      </div>
+
+      <!-- Study Name -->
+      <div class="form-group bordered-block">
+        <label for="studyName" class="col-form-label fw-bold">Study Name:</label>
+        <input id="studyName" formControlName="studyName" class="form-control input-block"/>
+      </div>
+
+      <!-- Validation Messages -->
+      <div
+        *ngIf="studyForm.errors?.['requiredOne'] && 
+        (studyForm.controls['studyId'].touched || studyForm.controls['studyName'].touched)"
+        class="text-danger"
+      >
+        At least one of Study ID or Study Name is required.
+      </div>
+
+      <!-- Space between Study ID/Name and dynamic fields -->
+      <br />
+
+      <!-- Dynamic Fields -->
+      <div class="form-container">
+        <div *ngFor="let field of fields" class="form-group bordered-block">
+          <label class="col-form-label fw-bold">{{ field.label }}:</label>
+          <div class="field-container">
+            <select
+              [formControlName]="field.key"
+              class="form-control input-block"
+              (change)="onStatusChange(field.key, $event)"
+            >
+              <option *ngFor="let option of statusOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <i class="status-icon" [class]="statusIcons[field.key]"></i>
+          </div>
+          <textarea
+            placeholder="Add comment"
+            [formControlName]="field.key + '_comment'"
+            class="form-control text-area-block"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          [disabled]="isSubmitDisabled()"
+          class="btn btn-primary"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

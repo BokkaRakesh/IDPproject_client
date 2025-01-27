@@ -1,0 +1,36 @@
+<div class="container mt-5">
+  <!-- Card for the header -->
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white text-center">
+      <h1 class="mb-0">GIP Dataset Tracker Page</h1>
+    </div>
+    <div class="card-body">
+      <!-- Radio buttons for selecting Study Type -->
+      <div class="d-flex justify-content-center mb-4">
+        <div class="form-check form-check-inline">
+          <input type="radio" class="form-check-input" name="studyType" [(ngModel)]="selectedOption" value="new" id="newStudy" />
+          <label class="form-check-label" for="newStudy">New Study</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input type="radio" class="form-check-input" name="studyType" [(ngModel)]="selectedOption" value="existing" id="existingStudy" />
+          <label class="form-check-label" for="existingStudy">Existing Study</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Study Form (only visible when 'new' is selected) -->
+<div *ngIf="selectedOption === 'new'">
+  <div class="container mt-4">
+    <app-study-form [mode]="'new'"></app-study-form>
+  </div>
+</div>
+
+<!-- Existing Study Search and Table (only visible when 'existing' is selected) -->
+<div *ngIf="selectedOption === 'existing'" class="container mt-4">
+  <!-- <app-existing-study></app-existing-study> -->
+  <!-- Search Box for filtering studies -->
+<app-existing-study [mode]="'existing'"></app-existing-study>
+</div>
+

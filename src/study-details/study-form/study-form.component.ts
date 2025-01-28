@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit } from "@angular/core"
 import { FormGroup, FormBuilder, Validators, AsyncValidatorFn, AbstractControl, ReactiveFormsModule } from "@angular/forms";
 import { StudyService } from "../services/study.service";
 import { Observable, of } from "rxjs";
-import { map, catchError } from "rxjs/operators";
+import { map, catchError, debounceTime } from "rxjs/operators";
 import { CommonModule } from "@angular/common";
 import { StudyField, StudyFields } from "../interfaces/studyFile.interface";
 
@@ -55,7 +55,11 @@ export class StudyFormComponent implements OnInit {
   ngOnInit() {
     this.studyForm = this.fb.group(
       {
-        studyId: ['', Validators.required],
+        studyId: [
+          '',
+          [Validators.required],
+          [this.checkStudyIdValidator.bind(this)], // Async Validator
+        ],
         studyName: ['', Validators.required],
         ...this.fields.reduce((acc: { [key: string]: any }, field) => {
           acc[field.key] = ['notyetstarted', Validators.required];
@@ -67,6 +71,22 @@ export class StudyFormComponent implements OnInit {
     );
     this.initializeStatusIcons();
   }
+    // Async Validator for checking `studyId`
+    checkStudyIdValidator(control: AbstractControl) {
+      if (!control.value) {
+        return of(null); // No error if the control is empty
+      }
+      //this.http.get(`/api/check-study-id/${control.value}`)
+  
+      return this.studyService.checkStudyIdValidator(this.studyForm.get('studyId')?.value).pipe(
+        debounceTime(500),
+        map((response: any) => {
+          return response.exists ? { studyIdExists: true } : null;
+        }),
+        catchError(() => of(null)) // Handle errors gracefully
+      );
+    }
+  
   initializeStatusIcons() {
     this.fields.forEach((field) => {
       const status = this.studyForm.get(field.key)?.value || 'notyetstarted';

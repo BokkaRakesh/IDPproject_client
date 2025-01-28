@@ -135,8 +135,8 @@ export class ExistingStudyComponent implements OnInit {
       const formData = this.studyForm.getRawValue(); // Include disabled fields like studyId
 
       const updatedStudyData = {
-        studyId: formData.studyId,
-        studyName: formData.studyName, // Capture updated studyName
+        studyId: formData.studyId || null,
+        studyName: formData.studyName || null, // Capture updated studyName
         fields: Object.keys(formData)
           .filter((key) => key !== 'studyId' && key !== 'studyName') // Exclude non-field keys
           .filter((key) => !key.endsWith('_comment')) // Handle comments separately

@@ -30,7 +30,14 @@ export class StudyService {
       })
     );
   }
-
+getstudyRecords(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/studyRecords`).pipe(
+      catchError((error) => {
+        console.error('Error retrieving study:', error);
+        throw error;
+      })
+    );
+  }
   // Method to save a new study
   saveStudyData(studyData: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, studyData).pipe(
@@ -74,5 +81,13 @@ export class StudyService {
       },
       error: (err) => console.error('Error exporting studies:', err),
     });
+  }
+  checkStudyIdValidator(studyId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/check-study-id/${studyId}`).pipe(
+      catchError((error) => {
+        console.error('Error retrieving study:', error);
+        throw error;
+      })
+    );
   }
 }

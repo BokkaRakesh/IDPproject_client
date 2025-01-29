@@ -112,9 +112,9 @@
                   *ngIf="studyForm.get(field.key)?.value"
                   [ngClass]="{
                     'bi-check-circle': studyForm.get(field.key)?.value === 'complete',
-                    'bi-clock': studyForm.get(field.key)?.value === 'inProgress',
-                    'bi-exclamation-circle': studyForm.get(field.key)?.value === 'notStarted',
-                    'bi-x-circle': studyForm.get(field.key)?.value === 'notApplicable'
+                    'bi bi-arrow-repeat text-primary': studyForm.get(field.key)?.value === 'inProgress',
+                    'bi-exclamation-circle': studyForm.get(field.key)?.value === 'notyetstarted',
+                    'bi-ban': studyForm.get(field.key)?.value === 'notApplicable'
                   }"
                   class="status-icon"
                 ></i>

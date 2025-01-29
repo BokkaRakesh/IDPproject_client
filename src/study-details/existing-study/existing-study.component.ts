@@ -26,7 +26,29 @@ export class ExistingStudyComponent implements OnInit {
     { label: 'Complete', value: 'complete' },
     { label: 'Not Applicable', value: 'notApplicable' },
   ];
-
+  fields = [
+    { key: 'requestNewData', label: 'Request for new data Ingestion' },
+    { key: 'jiraCreation', label: 'Jira creation in ICDP Dashboard' },
+    { key: 'apolloMetaRequest', label: 'Apollo Meta request creation and approval' },
+    { key: 'idtaCreation', label: 'IDTA creation and approval' },
+    { key: 's3Bucket', label: 'S3 bucket creation and testing with the vendor' },
+    { key: 'sampleDataTransfer', label: 'Sample data transfer with transfer log' },
+    { key: 'sampleDataVerificationS3', label: 'Sample data verification on S3' },
+    { key: 'sampleDataValidationFlywheel', label: 'Sample data validation on Flywheel' },
+    { key: 'sampleDataIngestionConfirmation', label: 'Sample data ingestion confirmation to the vendor' },
+    { key: 'gearsCurationTags', label: 'Gears+Curation+Tags Verification' },
+    { key: 'fullDatasetTransfer', label: 'Full dataset transfer by the vendor' },
+    { key: 'fullDatasetVerificationS3', label: 'Full dataset verification on S3' },
+    { key: 'fullDatasetIngestionFlywheel', label: 'Full dataset ingestion on Flywheel' },
+    { key: 'fullDatasetValidationVendor', label: 'Full dataset validation confirmation to the vendor' },
+    { key: 'onboardingDocs', label: 'Onboarding documentation' },
+    { key: 'dataIngestionChecklist', label: 'Data Ingestion Checklist' },
+    { key: 'closeLoopVendor', label: 'Close the loop with the vendor' },
+    { key: 'datasetAvailability', label: 'Dataset availability confirmation to the study teams' },
+    { key: 'dataAccessRequests', label: 'Data access requests by the users' },
+    { key: 'dataAccessJiraCreation', label: 'Data access jira creation in ICDP' },
+    { key: 'dataAccessCompletion', label: 'Data access completion by the data managers' },
+  ];
   // Flag to check if form is in edit mode
   isEditable: boolean = false;
   isLoading: boolean = false;
@@ -43,23 +65,49 @@ export class ExistingStudyComponent implements OnInit {
   getStudies(): void {
     this.isLoading = true;
     this.studyService.getStudies().subscribe({
-      next: (response:any) => {
-        this.studies = response.studies
-        this.filteredStudies = [...this.studies];
+      next: (response: any) => {
+        this.studies = response.studies.map((study: any) => ({
+          ...study,
+          status: this.computeStudyStatus(study.fields) // Compute status dynamically
+        }));
+  
+        this.filteredStudies = [...this.studies]; // Refresh filtered studies
         this.isLoading = false;
+  
+        // Force Angular UI update
         this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error fetching studies:', err);
         this.isLoading = false;
-      },
-      complete: () => {
-        console.log('Studies fetched successfully', this.filteredStudies);
-        console.log('this.studies', this.studies);
-        console.log('Studies fetched successfully');
       }
     });
   }
+  
+  
+  
+  
+  // Compute the overall study status based on the fields array
+  computeStudyStatus(fields: any[]): string {
+    if (!fields || fields.length === 0) {
+      return 'notApplicable'; // Default if no fields exist
+    }
+  
+    // If any field is "inProgress", mark study as "In Progress"
+    if (fields.some((field) => field.status === 'inProgress')) {
+      return 'inProgress';
+    }
+  
+    // If all fields are "notyetstarted", mark as "NA"
+    if (fields.every((field) => field.status === 'notyetstarted')) {
+      return 'notApplicable';
+    }
+  
+    return 'complete'; // Otherwise, consider study as "Complete"
+  }
+  
+  
   // Filter studies based on the search query
   filterStudies(): void {
     if (this.searchQuery) {
@@ -151,18 +199,19 @@ export class ExistingStudyComponent implements OnInit {
       };
       
       console.log("formData",formData, this.selectedStudy, updatedStudyData);
-      this.studyService.updateStudyData(formData.studyId,updatedStudyData).subscribe({
-        next: () => {
-          alert('Study data updated successfully');
-          this.refreshStudies();
-          this.studyForm.reset();
-          this.selectedStudy = null;
-        },
-        error: (error) => {
-          alert('Error updating study data');
-          console.error('Error updating study data:', error);
-        },
-      });
+      this.updateStudy(updatedStudyData)
+      // this.studyService.updateStudyData(formData.studyId,updatedStudyData).subscribe({
+      //   next: () => {
+      //     alert('Study data updated successfully');
+      //     this.refreshStudies();
+      //     this.studyForm.reset();
+      //     this.selectedStudy = null;
+      //   },
+      //   error: (error) => {
+      //     alert('Error updating study data');
+      //     console.error('Error updating study data:', error);
+      //   },
+      // });
     }
   }
 
@@ -183,5 +232,35 @@ export class ExistingStudyComponent implements OnInit {
       },
     });
   }
+  updateStudy(updatedStudyData: any): void {
+    this.studyService.updateStudyData(updatedStudyData.studyId, updatedStudyData).subscribe({
+      next: () => {
+        alert('Study data updated successfully');
+  
+        // Find and update the study in the local array
+        const index = this.studies.findIndex((s) => s.studyId === updatedStudyData.studyId);
+        if (index !== -1) {
+          this.studies[index] = {
+            ...updatedStudyData,
+            status: this.computeStudyStatus(updatedStudyData.fields) // Recompute status
+          };
+        }
+  
+        // Completely replace the filteredStudies array to trigger UI refresh
+        this.filteredStudies = [...this.studies];
+  
+        // Force UI update
+        this.cdr.detectChanges(); 
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        alert('Error updating study data');
+        console.error('Error updating study data:', error);
+      }
+    });
+  }
+  
+  
+  
 
 }

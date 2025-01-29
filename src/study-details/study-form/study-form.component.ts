@@ -178,20 +178,26 @@ export class StudyFormComponent implements OnInit {
         ])
       );
   
+      // Format the `fields` array to match the GET response JSON structure
+      const formattedFields = Object.keys(formData)
+        .filter((key) => key !== 'studyId' && key !== 'studyName') // Exclude non-field keys
+        .filter((key) => !key.endsWith('_comment')) // Handle comments separately
+        .map((key) => ({
+          M: {
+            key: { S: key }, // Form key from the form
+            label: { S: fieldLabelMap.get(key) || key }, // Map keys to labels from StudyFields enum
+            status: { S: formData[key] }, // Get updated status value from form
+            comment: { S: formData[key + '_comment'] || '' }, // Get updated comment from form
+          }
+        }));
+  
+      // Final payload format matching the GET response structure
       const updatedStudyData = {
-        studyId: formData.studyId,
-        studyName: formData.studyName, // Capture updated studyName
-        fields: Object.keys(formData)
-          .filter((key) => key !== 'studyId' && key !== 'studyName') // Exclude non-field keys
-          .filter((key) => !key.endsWith('_comment')) // Handle comments separately
-          .map((key): StudyField => ({
-            key: key, // Form key (from the form)
-            label: fieldLabelMap.get(key) || key, // Map keys to labels from StudyFields enum
-            status: formData[key], // Get updated status value from form
-            comment: formData[key + '_comment'] || '', // Get updated comment from form
-          })),
-        createdAt: new Date().toISOString(), // Preserve original creation timestamp
-        updatedAt: new Date().toISOString(), // Capture the updated timestamp
+        studyId: { S: formData.studyId }, // Primary key as an attribute with 'S' type
+        studyName: { S: formData.studyName }, // Study name with 'S' type
+        fields: { L: formattedFields }, // Fields stored as a list of maps
+        createdAt: { S: new Date().toISOString() }, // Capture creation timestamp
+        updatedAt: { S: new Date().toISOString() }, // Capture update timestamp
       };
   
       console.log('Updated Study Data:', updatedStudyData);
@@ -209,6 +215,7 @@ export class StudyFormComponent implements OnInit {
       });
     }
   }
+  
   
   // Helper function to convert enum keys to camelCase to match form field keys
   private toCamelCase(enumKey: string): string {

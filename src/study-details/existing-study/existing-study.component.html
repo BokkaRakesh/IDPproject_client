@@ -38,9 +38,9 @@
       <tbody>
         <ng-container *ngFor="let study of filteredStudies">
           <tr
-          *ngIf="isStudyVisible(study)"
-  class="cursor-pointer"
-  (click)="onSelectStudy(study)"
+            *ngIf="isStudyVisible(study)"
+            class="cursor-pointer"
+            (click)="onSelectStudy(study)"
           >
             <td>{{ study.studyId }}</td>
             <td>{{ study.studyName }}</td>
@@ -48,16 +48,19 @@
               <span
                 [ngClass]="{
                   'text-success': study.status === 'inProgress',
-                  'text-danger': study.status === 'notApplicable'
+                  'text-danger': study.status === 'notApplicable',
+                  'text-warning': study.status === 'complete'
                 }"
               >
-                {{ study.status === 'inProgress' ? 'In Progress' : 'NA' }}
+                {{ study.status === 'inProgress' ? 'In Progress' : study.status === 'notApplicable' ? 'NA' : 'Complete' }}
               </span>
             </td>
           </tr>
         </ng-container>
       </tbody>
     </table>
+    
+    
   </div>
 </div>
 

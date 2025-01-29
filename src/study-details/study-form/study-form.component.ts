@@ -167,7 +167,10 @@ export class StudyFormComponent implements OnInit {
   }
   
   onSubmit() {
-    if (this.studyForm.valid) {
+    
+      const studyIdValid = this.studyForm.controls['studyId'].valid;
+      const studyNameValid = this.studyForm.controls['studyName'].valid;
+      if (studyIdValid || studyNameValid) {
       const formData = this.studyForm.getRawValue(); // Include disabled fields like studyId
   
       // Convert StudyFields enum into a map for easy lookup of labels
@@ -213,8 +216,11 @@ export class StudyFormComponent implements OnInit {
           console.error('Error updating study data:', error);
         },
       });
+    
     }
+  
   }
+  
   
   
   // Helper function to convert enum keys to camelCase to match form field keys

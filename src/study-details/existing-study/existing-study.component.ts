@@ -91,23 +91,24 @@ export class ExistingStudyComponent implements OnInit {
   
   
   // Compute the overall study status based on the fields array
-  computeStudyStatus(fields: any[]): string {
-    if (!fields || fields.length === 0) {
-      return 'notApplicable'; // Default if no fields exist
+  computeStudyStatus(fields: any): string {
+    if (!fields || !fields.L || fields.L.length === 0) {
+      return 'notApplicable'; 
     }
   
-    // If any field is "inProgress", mark study as "In Progress"
-    if (fields.some((field) => field.status === 'inProgress')) {
+    const formattedFields = fields.L.map((field: any) => field.M);
+  
+    if (formattedFields.find((field:any) => field.status.S === 'inProgress')) {
       return 'inProgress';
     }
   
-    // If all fields are "notyetstarted", mark as "NA"
-    if (fields.every((field) => field.status === 'notyetstarted')) {
+    if (formattedFields.find((field:any) => field.status.S === 'notyetstarted')) {
       return 'notApplicable';
     }
   
-    return 'complete'; // Otherwise, consider study as "Complete"
+    return 'complete';
   }
+  
   
   
   // Filter studies based on the search query
@@ -154,24 +155,30 @@ export class ExistingStudyComponent implements OnInit {
     const fieldsGroup: any = {};
   
     // Add studyId and studyName with validators
-    fieldsGroup['uId'] = [this.selectedStudy.uID];
+    fieldsGroup['uId'] = [this.selectedStudy.uID?.S || ''];
     fieldsGroup['studyId'] = [
-      { value: this.selectedStudy.studyId, disabled: true },
+      { value: this.selectedStudy.studyId?.S || '', disabled: true },
       [Validators.required],
-      [this.checkStudyIdValidator.bind(this)] // Async Validator
+      [this.checkStudyIdValidator.bind(this)]
     ];
     fieldsGroup['studyName'] = [
-      { value: this.selectedStudy.studyName, disabled: true },
+      { value: this.selectedStudy.studyName?.S || '', disabled: true },
       [Validators.required]
     ];
   
-    // Collect all required fields for validation
+    // ✅ Ensure `fields.L` is properly extracted
+    const fieldsArray = this.selectedStudy.fields?.L || [];
+  
+    // ✅ Process fields correctly
     const requiredFields: string[] = [];
-
-    this.selectedStudy.fields.forEach((field: any) => {
-      fieldsGroup[field.key] = [{ value: field.status, disabled: false }, Validators.required];
-      fieldsGroup[field.key + '_comment'] = [{ value: field.comment, disabled: false }];
-      requiredFields.push(field.key);
+  
+    fieldsArray.forEach((fieldWrapper: any) => {
+      const field = fieldWrapper.M; // Extract the actual field data
+      const fieldKey = field.key.S;
+      
+      fieldsGroup[fieldKey] = [{ value: field.status.S, disabled: true }, Validators.required];
+      fieldsGroup[fieldKey + '_comment'] = [{ value: field.comment.S || '', disabled: true }];
+      requiredFields.push(fieldKey);
     });
   
     this.studyForm = this.fb.group(fieldsGroup, {
@@ -182,6 +189,7 @@ export class ExistingStudyComponent implements OnInit {
   
     console.log('Form initialized, Status:', this.studyForm.status);
   }
+  
   
   logForm() {
     console.log('Form Status:', this.studyForm.status);
@@ -286,9 +294,13 @@ export class ExistingStudyComponent implements OnInit {
   onSubmit() {
     const studyIdValid = this.studyForm.controls['studyId'].valid;
     const studyNameValid = this.studyForm.controls['studyName'].valid;
+  
     if (studyIdValid || studyNameValid) {
       const formData = this.studyForm.getRawValue(); // Include disabled fields like studyId
-
+  
+      // ✅ Extract `fields.L` properly before using `.find()`
+      const fieldList = this.selectedStudy.fields?.L?.map((field: any) => field.M) || [];
+  
       const updatedStudyData = {
         uID: formData.uId,
         studyId: formData.studyId || null,
@@ -298,18 +310,19 @@ export class ExistingStudyComponent implements OnInit {
           .filter((key) => !key.endsWith('_comment')) // Handle comments separately
           .map((key) => ({
             key: key, // Form key (from the form)
-            label: this.selectedStudy.fields.find((field: any) => field.key === key)?.label || '',
+            label: fieldList.find((field: any) => field.key.S === key)?.label.S || '', // ✅ Extract label correctly
             status: formData[key], // Get updated status value from form
             comment: formData[key + '_comment'] || '', // Get updated comment from form
           })),
-        createdAt: this.selectedStudy.createdAt,
+        createdAt: this.selectedStudy.createdAt?.S || new Date().toISOString(),
         updatedAt: new Date().toISOString(), // Capture the updated timestamp
       };
-      
-      console.log("formData",formData, this.selectedStudy, updatedStudyData);
-      this.updateStudy(updatedStudyData)
+  
+      console.log("formData", formData, this.selectedStudy, updatedStudyData);
+      this.updateStudy(updatedStudyData);
     }
   }
+  
 
   // Refresh the studies list
   refreshStudies() {
@@ -318,9 +331,13 @@ export class ExistingStudyComponent implements OnInit {
     this.studyService.getStudies().subscribe({
       next: (response:any) => {
         this.studies = []
-        this.studies = response.studies
-        this.filteredStudies = [];
-        this.filteredStudies = [...this.studies]; // Ensure filtered studies is updated
+        this.studies = response.studies.map((study: any) => ({
+          ...study,
+          status: this.computeStudyStatus(study.fields) // Compute status dynamically
+        }));
+  
+        this.filteredStudies = [...this.studies]; // Refresh filtered studies
+        this.isLoading = false;
         this.cdr.detectChanges(); // Trigger change detection
       },
       error: (err) => {
@@ -332,18 +349,18 @@ export class ExistingStudyComponent implements OnInit {
     this.studyService.updateStudyData(updatedStudyData.uID, updatedStudyData).subscribe({
       next: () => {
         alert('Study data updated successfully');
-  
+  this.refreshStudies();
         // Find and update the study in the local array
-        const index = this.studies.findIndex((s) => s.studyId === updatedStudyData.studyId);
-        if (index !== -1) {
-          this.studies[index] = {
-            ...updatedStudyData,
-            status: this.computeStudyStatus(updatedStudyData.fields) // Recompute status
-          };
-        }
+        // const index = this.studies.findIndex((s) => s.studyId === updatedStudyData.studyId);
+        // if (index !== -1) {
+        //   this.studies[index] = {
+        //     ...updatedStudyData,
+        //     status: this.computeStudyStatus(updatedStudyData.fields) // Recompute status
+        //   };
+        // }
   
-        // Completely replace the filteredStudies array to trigger UI refresh
-        this.filteredStudies = [...this.studies];
+        // // Completely replace the filteredStudies array to trigger UI refresh
+        // this.filteredStudies = [...this.studies];
   
         // Force UI update
         this.cdr.detectChanges(); 
@@ -352,7 +369,11 @@ export class ExistingStudyComponent implements OnInit {
       error: (error) => {
         alert('Error updating study data');
         console.error('Error updating study data:', error);
-      }
+      },
+      complete: () => {
+        this.isEditable = false;
+        this.onToggleEditMode();
+      },
     });
   }
   

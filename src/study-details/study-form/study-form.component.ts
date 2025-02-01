@@ -155,38 +155,30 @@ export class StudyFormComponent implements OnInit {
   }
   
   onSubmit() {
+    const studyIdValid = this.studyForm.controls['studyId'].valid;
+    const studyNameValid = this.studyForm.controls['studyName'].valid;
     
-      const studyIdValid = this.studyForm.controls['studyId'].valid;
-      const studyNameValid = this.studyForm.controls['studyName'].valid;
-      if (studyIdValid || studyNameValid) {
+    if (studyIdValid || studyNameValid) {
       const formData = this.studyForm.getRawValue(); // Include disabled fields like studyId
   
-      // Convert StudyFields enum into a map for easy lookup of labels
-      const fieldLabelMap = new Map<string, string>(
-        Object.entries(StudyFields).map(([enumKey, enumValue]) => [
-          this.toCamelCase(enumKey), // Convert enum keys to camelCase to match form keys
-          enumValue
-        ])
-      );
-  
-      // Format the `fields` array to match the GET response JSON structure
+      // Convert `fields` to match DynamoDB's structure
       const formattedFields = Object.keys(formData)
-        .filter((key) => key !== 'studyId' && key !== 'studyName') // Exclude non-field keys
+        .filter((key) => key !== 'studyId' && key !== 'studyName' && key !== 'uId') // Exclude non-field keys
         .filter((key) => !key.endsWith('_comment')) // Handle comments separately
         .map((key) => ({
           M: {
-            key: { S: key }, // Form key from the form
-            label: { S: fieldLabelMap.get(key) || key }, // Map keys to labels from StudyFields enum
+            key: { S: key }, // Form key (from the form)
+            label: { S: this.fields.find((field) => field.key === key)?.label || '' },
             status: { S: formData[key] }, // Get updated status value from form
             comment: { S: formData[key + '_comment'] || '' }, // Get updated comment from form
-          }
+          },
         }));
   
-      // Final payload format matching the GET response structure
+      // Final payload format matching the JSON structure
       const updatedStudyData = {
-        studyId: { S: formData.studyId }, // Primary key as an attribute with 'S' type
-        studyName: { S: formData.studyName }, // Study name with 'S' type
-        fields: { L: formattedFields }, // Fields stored as a list of maps
+        studyId: { S: formData.studyId },
+        studyName: { S: formData.studyName },
+        fields: { L: formattedFields },
         createdAt: { S: new Date().toISOString() }, // Capture creation timestamp
         updatedAt: { S: new Date().toISOString() }, // Capture update timestamp
       };
@@ -204,10 +196,9 @@ export class StudyFormComponent implements OnInit {
           console.error('Error updating study data:', error);
         },
       });
-    
     }
-  
   }
+  
   
   
   

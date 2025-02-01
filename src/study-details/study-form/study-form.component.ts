@@ -122,18 +122,6 @@ export class StudyFormComponent implements OnInit {
     };
   }
 
-  // studyIdAsyncValidator(): AsyncValidatorFn {
-  //   return (control: AbstractControl): Observable<any> => {
-  //     if (!control.value) {
-  //       return of(null);
-  //     }
-  //     return this.studyService.checkStudyIdExists(control.value).pipe(
-  //       map((exists: boolean) => (exists ? { studyIdExists: true } : null)),
-  //       catchError(() => of(null))
-  //     );
-  //   };
-  // }
-
   setInitialIcons(): void {
     this.fields.forEach((field) => {
       const status = this.studyForm.get(field.key)?.value || 'notyetstarted';
@@ -227,44 +215,7 @@ export class StudyFormComponent implements OnInit {
   private toCamelCase(enumKey: string): string {
     return enumKey.charAt(0).toLowerCase() + enumKey.slice(1);
   }
-  
-  
 
-  
-  
-  // Helper method to convert form keys to enum keys
-  private toEnumKeyFormat(key: string): string {
-    return key.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
-  }
-  
-  
-  // onSubmit(): void {
-  //   const studyIdValid = this.studyForm.controls['studyId'].valid;
-  //   const studyNameValid = this.studyForm.controls['studyName'].valid;
-  //   if (studyIdValid || studyNameValid) {
-  //     const formData = this.studyForm.value;
-  //     const newStudyData = {
-  //       studyId: formData.studyId,
-  //       studyName: formData.studyName,
-  //       fields: this.fields.map((field) => ({
-  //         name: field.name,
-  //         status: formData[field.key],
-  //         comment: formData[field.key + '_comment'],
-  //       })),
-  //       createdAt: new Date(),
-  //       updatedAt: new Date(),
-  //     };
-
-  //     this.studyService.saveStudyData(newStudyData).subscribe(
-  //       () => {
-  //         alert('Study data saved successfully');
-  //         this.studyForm.reset();
-  //         this.initializeForm();
-  //       },
-  //       (error) => console.error('Error saving study data:', error)
-  //     );
-  //   }
-  // }
   isSubmitDisabled(): boolean {
     // Disable the button if both fields are invalid
     const studyIdValid = this.studyForm.controls['studyId'].valid;

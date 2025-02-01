@@ -84,7 +84,10 @@
         <!-- Study ID -->
         <div class="form-group bordered-block">
           <label for="studyId" class="col-form-label fw-bold">Study ID:</label>
-          <input id="studyId" formControlName="studyId" class="form-control input-block" [disabled]="true" />
+          <input id="studyId" formControlName="studyId" class="form-control input-block" [disabled]="!isEditable" />
+          <div *ngIf="studyForm.controls['studyId'].hasError('studyIdExists') && studyForm.controls['studyId'].touched" class="text-danger">
+            Study ID already exists.
+          </div>
         </div>
 
         <!-- Study Name (Read-Only) -->
@@ -95,6 +98,10 @@
             formControlName="studyName"
             class="form-control input-block"
             [disabled]="!isEditable"/>
+        </div>
+        <!-- Validation Messages -->
+        <div *ngIf="studyForm.hasError('requiredOne') && (studyForm.dirty || studyForm.touched)" class="text-danger">
+          At least one of Study ID, Study Name, or Fields is required.
         </div>
         
         <!-- Dynamic Fields -->
@@ -131,7 +138,7 @@
 
         <!-- Submit Button -->
         <div class="form-actions">
-          <button type="submit" [disabled]="studyForm.invalid || !isEditable" class="btn btn-primary mt-3 float-end">
+          <button type="submit" [disabled]="studyForm.hasError('requiredOne') && (studyForm.dirty || studyForm.touched)" class="btn btn-primary mt-3 float-end">
             Update
           </button>
         </div>

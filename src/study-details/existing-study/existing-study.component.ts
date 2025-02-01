@@ -1,8 +1,10 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule, AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import saveAs from 'file-saver';
 import { StudyService } from '../services/study.service';
+import { of } from "rxjs";
+import { debounceTime, map, catchError } from "rxjs/operators";
 
 @Component({
   selector: 'app-existing-study',
@@ -121,6 +123,9 @@ export class ExistingStudyComponent implements OnInit {
       this.filteredStudies = [...this.studies];
     }
   }
+  
+ 
+  
   isStudyVisible(study: any): boolean {
     // Check if the study matches the selected study ID or name, or if no filters are applied
     const matchesStudyId = !this.selectedStudyId || study.studyId === this.selectedStudyId;
@@ -148,45 +153,148 @@ export class ExistingStudyComponent implements OnInit {
   private initializeForm() {
     const fieldsGroup: any = {};
   
-    // Add studyId and studyName to the form group
-    fieldsGroup['studyId'] = [{ value: this.selectedStudy.studyId, disabled: true }];
-    fieldsGroup['studyName'] = [ { value: this.selectedStudy.studyName, disabled: true }];
+    // Add studyId and studyName with validators
+    fieldsGroup['uId'] = [this.selectedStudy.uID];
+    fieldsGroup['studyId'] = [
+      { value: this.selectedStudy.studyId, disabled: true },
+      [Validators.required],
+      [this.checkStudyIdValidator.bind(this)] // Async Validator
+    ];
+    fieldsGroup['studyName'] = [
+      { value: this.selectedStudy.studyName, disabled: true },
+      [Validators.required]
+    ];
   
-    // Add dynamic fields
+    // Collect all required fields for validation
+    const requiredFields: string[] = [];
+
     this.selectedStudy.fields.forEach((field: any) => {
-      fieldsGroup[field.key] = [{value:field.status, disabled: true}, Validators.required]; // Field status control
-      fieldsGroup[field.key + '_comment'] = [{value:field.comment, disabled: true}]; // Field comment control
+      fieldsGroup[field.key] = [{ value: field.status, disabled: false }, Validators.required];
+      fieldsGroup[field.key + '_comment'] = [{ value: field.comment, disabled: false }];
+      requiredFields.push(field.key);
     });
   
-    // Initialize the form group
-    this.studyForm = this.fb.group(fieldsGroup);
+    this.studyForm = this.fb.group(fieldsGroup, {
+      validators: [this.atLeastOneRequiredValidator('studyId', 'studyName', requiredFields)],
+    });
+  
+    this.studyForm.updateValueAndValidity({ emitEvent: true });
+  
+    console.log('Form initialized, Status:', this.studyForm.status);
+  }
+  
+  logForm() {
+    console.log('Form Status:', this.studyForm.status);
+    console.log('Form Errors:', this.studyForm.errors); // Log group-level errors
+    console.log('Form Values:', this.studyForm.getRawValue());
+  
+    this.studyForm.statusChanges.subscribe((status) => {
+      console.log('Form Status Updated:', status);
+      console.log('Form Errors:', this.studyForm.errors);
+    
+      Object.keys(this.studyForm.controls).forEach((controlName) => {
+        const control = this.studyForm.get(controlName);
+        console.log(
+          `Control: ${controlName}, Status: ${control?.status}, Errors:`,
+          control?.errors
+        );
+      });
+    });
+  
+    console.log('Group-Level Errors:', this.studyForm.errors); // Specifically check form-level errors
+  }
+  
+  
+ checkStudyIdValidator(control: AbstractControl) {
+  if (!control.value) {
+    return of(null); // No validation if empty
   }
 
+  const formData = this.studyForm.getRawValue();
+
+  // Check if uId already exists in filtered studies
+  const isUIdUnique = !this.filteredStudies.find((study) => study.uID === formData.uId && study.studyId === formData.studyId);
+
+  if (!isUIdUnique) {
+    return of(null); // No need to check studyId if uId is already present
+  }
+
+  return this.studyService.checkStudyIdValidator(control.value).pipe(
+    debounceTime(500),
+    map((response: any) => {
+      return response.exists ? { studyIdExists: true } : null;
+    }),
+    catchError(() => of(null)) // Handle errors gracefully
+  );
+}
+
+  
+  // Custom Validator: At least one required field must be filled
+  atLeastOneRequiredValidator(
+    studyIdField: string,
+    studyNameField: string,
+    dynamicFields: string[]
+  ): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const formGroup = control as FormGroup;
+      const studyIdValue = formGroup.get(studyIdField)?.value?.toString().trim();
+      const studyNameValue = formGroup.get(studyNameField)?.value?.toString().trim();
+  
+      const hasStudyId = !!studyIdValue;
+      const hasStudyName = !!studyNameValue;
+  
+      const hasDynamicFieldValue = dynamicFields.some((field) => {
+        const controlValue = formGroup.get(field)?.value?.toString().trim();
+        return !!controlValue;
+      });
+  
+      console.log(
+        'Validator Running - hasStudyId:', hasStudyId,
+        'hasStudyName:', hasStudyName,
+        'hasDynamicFieldValue:', hasDynamicFieldValue
+      );
+  
+      // If none of the required fields have a value, set the error
+      if (!hasStudyId && !hasStudyName && hasDynamicFieldValue) {
+        console.log('Validator Setting Error: requiredOne');
+        return { requiredOne: true };
+      }
+  
+      console.log('Validator Passed - No Error');
+      return null; // Validation passes
+    };
+  }
+  
+  
+  
+  
+  
+  
+  
+  
   // Toggle edit mode
   onToggleEditMode() {
    
     if (!this.isEditable) {
       this.studyForm.disable();
     } else {
-      //Save the current state before disabling
-      // const currentFormValue = this.studyForm.getRawValue();
-      // this.studyForm.reset(currentFormValue);
       this.studyForm.enable();
       
     }
-    this.studyForm.get('studyId')?.disable();
-    this.studyForm.get('studyName')?.disable();
   }
 
   onSubmit() {
-    if (this.studyForm.valid) {
+    const studyIdValid = this.studyForm.controls['studyId'].valid;
+    const studyNameValid = this.studyForm.controls['studyName'].valid;
+    if (studyIdValid || studyNameValid) {
       const formData = this.studyForm.getRawValue(); // Include disabled fields like studyId
 
       const updatedStudyData = {
+        uID: formData.uId,
         studyId: formData.studyId || null,
         studyName: formData.studyName || null, // Capture updated studyName
         fields: Object.keys(formData)
-          .filter((key) => key !== 'studyId' && key !== 'studyName') // Exclude non-field keys
+          .filter((key) => key !== 'studyId' && key !== 'studyName' && key !== 'uId') // Exclude non-field keys
           .filter((key) => !key.endsWith('_comment')) // Handle comments separately
           .map((key) => ({
             key: key, // Form key (from the form)
@@ -200,18 +308,6 @@ export class ExistingStudyComponent implements OnInit {
       
       console.log("formData",formData, this.selectedStudy, updatedStudyData);
       this.updateStudy(updatedStudyData)
-      // this.studyService.updateStudyData(formData.studyId,updatedStudyData).subscribe({
-      //   next: () => {
-      //     alert('Study data updated successfully');
-      //     this.refreshStudies();
-      //     this.studyForm.reset();
-      //     this.selectedStudy = null;
-      //   },
-      //   error: (error) => {
-      //     alert('Error updating study data');
-      //     console.error('Error updating study data:', error);
-      //   },
-      // });
     }
   }
 
@@ -233,7 +329,7 @@ export class ExistingStudyComponent implements OnInit {
     });
   }
   updateStudy(updatedStudyData: any): void {
-    this.studyService.updateStudyData(updatedStudyData.studyId, updatedStudyData).subscribe({
+    this.studyService.updateStudyData(updatedStudyData.uID, updatedStudyData).subscribe({
       next: () => {
         alert('Study data updated successfully');
   

@@ -6,11 +6,12 @@ import { StudyService } from '../services/study.service';
 import { of } from "rxjs";
 import { debounceTime, map, catchError } from "rxjs/operators";
 import { TooltipStatusDirective } from '../directives/tooltip-status.directive';
+import { InfoIconDirective } from '../directives/info-icon.directive';
 
 @Component({
   selector: 'app-existing-study',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TooltipStatusDirective],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TooltipStatusDirective, InfoIconDirective],
   templateUrl: './existing-study.component.html',
   styleUrls: ['./existing-study.component.scss'],
 })
@@ -404,4 +405,6 @@ export class ExistingStudyComponent implements OnInit {
     if (statusMetrics['complete'] > 0) return 'Complete';
     return 'Not Yet Started';
   }
+
+  
 }

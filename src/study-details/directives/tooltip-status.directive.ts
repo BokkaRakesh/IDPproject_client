@@ -67,3 +67,4 @@ export class TooltipStatusDirective {
     return labels[status] || 'Unknown';
   }
 }
+

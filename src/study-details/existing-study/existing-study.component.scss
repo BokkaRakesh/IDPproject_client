@@ -66,7 +66,6 @@
   }
   
   .status-icon {
-    font-size: 20px;
     margin-left: 10px;
     position: absolute;
     top: 12%;
@@ -111,11 +110,6 @@
     overflow-y: auto;  
     padding-right: 10px; 
   }
-  .status-icon {
-    font-size: 1.5rem;  /* Adjust size */
-    color: #007bff;     /* Default color */
-  }
-  
   .bi-check-circle {
     color: green;
   }
@@ -127,10 +121,6 @@
   .bi-x-circle {
     color: red;
   }
-  // .status-icon {
-  //   font-size: 1.5rem;  
-  //   color: #007bff;    
-  // }
   .custom-tooltip {
     position: absolute;
     background: linear-gradient(to bottom, #fffaf0, #3a3a39);

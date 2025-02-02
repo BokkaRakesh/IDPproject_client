@@ -34,13 +34,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let study of filteredStudies" [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)" [ngClass]="{
+        <tr *ngFor="let study of filteredStudies" [ngClass]="{
           'text-success': computeStatusMetrics(study)['inProgress'] > 0,
           'text-danger': computeStatusMetrics(study)['notApplicable'] > 0,
           'text-warning': computeStatusMetrics(study)['complete'] > 0
         }">
-          <td>{{ study.studyId.S }}</td>
-          <td>{{ study.studyName.S }}</td>
+          <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)" >{{ study.studyId.S }}</td>
+          <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)" >{{ study.studyName.S }}</td>
           <td>
             <span [ngClass]="{
               'text-success': computeStatusMetrics(study)['inProgress'] > 0,

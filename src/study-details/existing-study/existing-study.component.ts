@@ -213,28 +213,35 @@ export class ExistingStudyComponent implements OnInit {
   }
   
   
- checkStudyIdValidator(control: AbstractControl) {
-  if (!control.value) {
-    return of(null); // No validation if empty
+  checkStudyIdValidator(control: AbstractControl) { 
+    if (!control.value) {
+      return of(null); // No validation if empty
+    }
+  
+    const formData = this.studyForm.getRawValue();
+  
+    console.log('Checking studyId:', formData.studyId);
+    console.log('Checking uID:', formData.uId);
+    console.log('Filtered Studies:', this.filteredStudies);
+  
+    // Check if the studyId already exists with a different uID
+    const isStudyIdConflict = !this.filteredStudies.some(
+      (study) => study.studyId.S === formData.studyId && study.uID.S !== formData.uId
+    );
+  
+    if (isStudyIdConflict) {
+      return of(null); // No need to check further as there's a conflict
+    }
+  
+    return this.studyService.checkStudyIdValidator(control.value).pipe(
+      debounceTime(500),
+      map((response: any) => {
+        return response.exists ? { studyIdExists: true } : null;
+      }),
+      catchError(() => of(null)) // Handle errors gracefully
+    );
   }
-
-  const formData = this.studyForm.getRawValue();
-
-  // Check if uId already exists in filtered studies
-  const isUIdUnique = !this.filteredStudies.find((study) => study.uID === formData.uId && study.studyId === formData.studyId);
-
-  if (!isUIdUnique) {
-    return of(null); // No need to check studyId if uId is already present
-  }
-
-  return this.studyService.checkStudyIdValidator(control.value).pipe(
-    debounceTime(500),
-    map((response: any) => {
-      return response.exists ? { studyIdExists: true } : null;
-    }),
-    catchError(() => of(null)) // Handle errors gracefully
-  );
-}
+  
 
   
   // Custom Validator: At least one required field must be filled

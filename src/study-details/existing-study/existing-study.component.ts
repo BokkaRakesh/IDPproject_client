@@ -5,11 +5,12 @@ import saveAs from 'file-saver';
 import { StudyService } from '../services/study.service';
 import { of } from "rxjs";
 import { debounceTime, map, catchError } from "rxjs/operators";
+import { TooltipStatusDirective } from '../directives/tooltip-status.directive';
 
 @Component({
   selector: 'app-existing-study',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TooltipStatusDirective],
   templateUrl: './existing-study.component.html',
   styleUrls: ['./existing-study.component.scss'],
 })
@@ -91,23 +92,23 @@ export class ExistingStudyComponent implements OnInit {
   
   
   // Compute the overall study status based on the fields array
-  computeStudyStatus(fields: any): string {
-    if (!fields || !fields.L || fields.L.length === 0) {
-      return 'notApplicable'; 
-    }
+  // computeStudyStatus(fields: any): string {
+  //   if (!fields || !fields.L || fields.L.length === 0) {
+  //     return 'notApplicable'; 
+  //   }
   
-    const formattedFields = fields.L.map((field: any) => field.M);
+  //   const formattedFields = fields.L.map((field: any) => field.M);
   
-    if (formattedFields.find((field:any) => field.status.S === 'inProgress')) {
-      return 'inProgress';
-    }
+  //   if (formattedFields.find((field:any) => field.status.S === 'inProgress')) {
+  //     return 'inProgress';
+  //   }
   
-    if (formattedFields.find((field:any) => field.status.S === 'notyetstarted')) {
-      return 'notApplicable';
-    }
+  //   if (formattedFields.find((field:any) => field.status.S === 'notyetstarted')) {
+  //     return 'notApplicable';
+  //   }
   
-    return 'complete';
-  }
+  //   return 'complete';
+  // }
   
   
   
@@ -166,10 +167,10 @@ export class ExistingStudyComponent implements OnInit {
       [Validators.required]
     ];
   
-    // ✅ Ensure `fields.L` is properly extracted
+    //  Ensure `fields.L` is properly extracted
     const fieldsArray = this.selectedStudy.fields?.L || [];
   
-    // ✅ Process fields correctly
+    //  Process fields correctly
     const requiredFields: string[] = [];
   
     fieldsArray.forEach((fieldWrapper: any) => {
@@ -384,7 +385,23 @@ export class ExistingStudyComponent implements OnInit {
     });
   }
   
-  
-  
-
+  // Function to compute status metrics in the component TypeScript file
+  computeStatusMetrics(study: any): { [key: string]: number } {
+    const statusCounts: { [key: string]: number } = {};
+    
+    (study.fields?.L || []).forEach((field: any) => {
+      const status = field.M?.status?.S || 'unknown';
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
+    });
+    
+    return statusCounts;
+  }
+  // Function to determine the display status for the study
+  computeStudyStatus(study: any): string {
+    const statusMetrics = this.computeStatusMetrics(study);
+    if (statusMetrics['inProgress'] > 0) return 'In Progress';
+    if (statusMetrics['notApplicable'] > 0) return 'NA';
+    if (statusMetrics['complete'] > 0) return 'Complete';
+    return 'Not Yet Started';
+  }
 }

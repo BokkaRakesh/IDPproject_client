@@ -34,27 +34,23 @@
         </tr>
       </thead>
       <tbody>
-        <ng-container *ngFor="let study of filteredStudies">
-          <tr
-            *ngIf="isStudyVisible(study)"
-            class="cursor-pointer"
-            (click)="onSelectStudy(study)"
-          >
-            <td>{{ study.studyId.S }}</td>
-            <td>{{ study.studyName.S }}</td>
-            <td>
-              <span
-                [ngClass]="{
-                  'text-success': study.status === 'inProgress',
-                  'text-danger': study.status === 'notApplicable',
-                  'text-warning': study.status === 'complete'
-                }"
-              >
-                {{ study.status === 'inProgress' ? 'In Progress' : study.status === 'notApplicable' ? 'NA' : 'Complete' }}
-              </span>
-            </td>
-          </tr>
-        </ng-container>
+        <tr *ngFor="let study of filteredStudies" [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)" [ngClass]="{
+          'text-success': computeStatusMetrics(study)['inProgress'] > 0,
+          'text-danger': computeStatusMetrics(study)['notApplicable'] > 0,
+          'text-warning': computeStatusMetrics(study)['complete'] > 0
+        }">
+          <td>{{ study.studyId.S }}</td>
+          <td>{{ study.studyName.S }}</td>
+          <td>
+            <span [ngClass]="{
+              'text-success': computeStatusMetrics(study)['inProgress'] > 0,
+              'text-danger': computeStatusMetrics(study)['notApplicable'] > 0,
+              'text-warning': computeStatusMetrics(study)['complete'] > 0
+            }">
+              {{ computeStudyStatus(study) }}
+            </span>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -117,8 +113,8 @@
                   [ngClass]="{
                     'bi-check-circle': studyForm.get(field.M.key.S)?.value === 'complete',
                     'bi-clock': studyForm.get(field.M.key.S)?.value === 'inProgress',
-                    'bi-exclamation-circle': studyForm.get(field.M.key.S)?.value === 'notStarted',
-                    'bi-x-circle': studyForm.get(field.M.key.S)?.value === 'notApplicable'
+                    'bi-exclamation-circle': studyForm.get(field.M.key.S)?.value === 'notyetstarted',
+                    'bi-ban text-danger': studyForm.get(field.M.key.S)?.value === 'notApplicable'
                   }"
                   class="status-icon"
                 ></i>

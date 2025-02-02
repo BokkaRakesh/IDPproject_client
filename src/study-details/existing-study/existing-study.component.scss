@@ -131,6 +131,32 @@
   //   font-size: 1.5rem;  
   //   color: #007bff;    
   // }
+  .custom-tooltip {
+    position: absolute;
+    background: linear-gradient(to bottom, #fffaf0, #3a3a39);
+    color: #000000;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    max-width: auto;
+    text-align: left;
+    z-index: 1000;
+  }
+  
+  .tooltip-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .tooltip-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  
   
   
   

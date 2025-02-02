@@ -98,7 +98,7 @@ export class StudyFormComponent implements OnInit {
       case 'notyetstarted': return 'bi bi-exclamation-circle text-warning';
       case 'inProgress': return 'bi bi-arrow-repeat text-primary';
       case 'complete': return 'bi bi-check-circle text-success';
-      case 'notApplicable': return 'bi bi-x-circle text-danger';
+      case 'notApplicable': return 'bi bi-ban text-danger';
       default: return '';
     }
   }
@@ -141,7 +141,7 @@ export class StudyFormComponent implements OnInit {
         this.statusIcons[fieldKey] = 'bi bi-check-circle text-success';
         break;
       case 'notApplicable':
-        this.statusIcons[fieldKey] = 'bi bi-x-circle text-danger';
+        this.statusIcons[fieldKey] = 'bi bi-ban text-danger';
         break;
       default:
         this.statusIcons[fieldKey] = '';

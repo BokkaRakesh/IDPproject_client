@@ -119,8 +119,8 @@ export class ExistingStudyComponent implements OnInit {
       const lowerCaseQuery = this.searchQuery.toLowerCase();
       this.filteredStudies = this.studies.filter(
         (study) =>
-          study?.studyId?.toLowerCase().includes(lowerCaseQuery) ||
-          study?.studyName?.toLowerCase().includes(lowerCaseQuery)
+          study?.studyId?.S.toLowerCase().includes(lowerCaseQuery) ||
+          study?.studyName?.S.toLowerCase().includes(lowerCaseQuery)
       );
     } else {
       this.filteredStudies = [...this.studies];

@@ -39,32 +39,36 @@ export class TooltipStatusDirective {
   }
 
   private generateTooltipText(): string {
-    const statuses = Object.entries(this.statusMetrics || {})
-      .filter(([_, count]) => count > 0)
-      .map(([status, count]) => `<span class='tooltip-status'><i class='status-icon ${this.getStatusIcon(status)}'></i> ${this.getStatusLabel(status)}: ${count}</span>`)
+    const statusOrder = ['inProgress', 'complete', 'notyetstarted'];
+    const statusCounts: { [key: string]: number } = {
+      'inProgress': this.statusMetrics['inProgress'] || 0,
+      'complete': this.statusMetrics['complete'] || 0,
+      'notyetstarted': this.statusMetrics['notyetstarted'] || 0
+    };
+    
+    const statuses = statusOrder
+      .map(status => `<span class='tooltip-status'><i class='status-icon ${this.getStatusIcon(status)}'></i> ${this.getStatusLabel(status)}: ${statusCounts[status]}</span>`)
       .join(' | ');
     
-    return `<div class='tooltip-container' style='display: flex; flex-direction: row; gap: 10px; white-space: nowrap;'>${statuses}</div>` || '';
-  }
-
-  private getStatusIcon(status: string): string {
-    const icons: { [key: string]: string } = {
-      'inProgress': 'bi bi-arrow-repeat text-primary',
-      'complete': 'bi bi-check-circle text-success',
-      'notApplicable': 'bi bi-ban text-danger',
-      'notyetstarted': 'bi bi-exclamation-circle text-warning'
-    };
-    return icons[status] || 'bi bi-question-circle';
+    return `<div class='tooltip-container' style='display: flex; flex-direction: row; gap: 10px; white-space: nowrap;'>${statuses}</div>`;
   }
 
   private getStatusLabel(status: string): string {
     const labels: { [key: string]: string } = {
       'inProgress': 'In Progress',
       'complete': 'Completed',
-      'notApplicable': 'Not Applicable',
       'notyetstarted': 'Not Yet Started'
     };
-    return labels[status] || 'Unknown';
+    return labels[status] || '';
+  }
+
+  private getStatusIcon(status: string): string {
+    const icons: { [key: string]: string } = {
+      'inProgress': 'bi bi-arrow-repeat text-primary',
+      'complete': 'bi bi-check-circle text-success',
+      'notyetstarted': 'bi bi-exclamation-circle text-warning'
+    };
+    return icons[status] || '';
   }
 }
 

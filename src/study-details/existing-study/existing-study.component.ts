@@ -389,21 +389,29 @@ export class ExistingStudyComponent implements OnInit {
   // Function to compute status metrics in the component TypeScript file
   computeStatusMetrics(study: any): { [key: string]: number } {
     const statusCounts: { [key: string]: number } = {};
-    
     (study.fields?.L || []).forEach((field: any) => {
-      const status = field.M?.status?.S || 'unknown';
+      const status = field.M?.status?.S || '';
       statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
-    
     return statusCounts;
   }
-  // Function to determine the display status for the study
+
   computeStudyStatus(study: any): string {
     const statusMetrics = this.computeStatusMetrics(study);
-    if (statusMetrics['inProgress'] > 0) return 'In Progress';
-    if (statusMetrics['notApplicable'] > 0) return 'NA';
-    if (statusMetrics['complete'] > 0) return 'Complete';
-    return 'Not Yet Started';
+    switch (true) {
+      case statusMetrics['inProgress'] > 0 && statusMetrics['notyetstarted'] > 0:
+        return 'In Progress';
+      case statusMetrics['inProgress'] > 0 && statusMetrics['complete'] > 0:
+        return 'In Progress';
+      case statusMetrics['inProgress'] > 0:
+        return 'In Progress';
+      case statusMetrics['complete'] > 0 && statusMetrics['notyetstarted'] > 0:
+        return 'In Progress';
+      case statusMetrics['complete'] > 0:
+        return 'Completed';
+      default:
+        return 'Not Yet Started';
+    }
   }
 
   

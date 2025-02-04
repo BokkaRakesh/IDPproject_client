@@ -37,9 +37,9 @@
         <ng-container *ngFor="let study of filteredStudies">
           <tr *ngIf="isStudyVisible(study)" 
               [ngClass]="{
-                'text-success': computeStatusMetrics(study)['inProgress'] > 0,
-                'text-danger': computeStatusMetrics(study)['notApplicable'] > 0,
-                'text-warning': computeStatusMetrics(study)['complete'] > 0
+                'text-custom': computeStatusMetrics(study)['inProgress'] > 0,
+                'text-danger': computeStatusMetrics(study)['notYetstarted'] > 0,
+                'text-success': computeStatusMetrics(study)['complete'] > 0
               }">
             <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)">
               {{ study.studyId.S }}
@@ -49,9 +49,9 @@
             </td>
             <td style="position: relative;">
               <span [ngClass]="{
-                'text-success': computeStatusMetrics(study)['inProgress'] > 0,
-                'text-danger': computeStatusMetrics(study)['notApplicable'] > 0,
-                'text-warning': computeStatusMetrics(study)['complete'] > 0
+                'text-custom': computeStatusMetrics(study)['inProgress'] > 0,
+                'text-danger': computeStatusMetrics(study)['notYetstarted'] > 0,
+                'text-success': computeStatusMetrics(study)['complete'] > 0
               }">
                 {{ computeStudyStatus(study) }}
               </span>

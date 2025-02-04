@@ -413,6 +413,4 @@ export class ExistingStudyComponent implements OnInit {
         return 'Not Yet Started';
     }
   }
-
-  
 }

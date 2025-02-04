@@ -48,11 +48,7 @@
               {{ study.studyName.S }}
             </td>
             <td style="position: relative;">
-              <span [ngClass]="{
-                'text-custom': computeStatusMetrics(study)['inProgress'] > 0,
-                'text-danger': computeStatusMetrics(study)['notYetstarted'] > 0,
-                'text-success': computeStatusMetrics(study)['complete'] > 0
-              }">
+              <span>
                 {{ computeStudyStatus(study) }}
               </span>
               <i class="bi bi-info-circle text-muted ms-2" [appInfoIcon]="study"></i>

@@ -2,18 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StudyService {
-  private apiUrl = 'http://localhost:5000/api/studies'; // Update with your backend API URL
+  private apiUrl = environment.apiUrl // Update with your backend API URL
 
   constructor(private http: HttpClient) {}
 
   // Method to retrieve all studies from the backend API
   getStudies(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
+    return this.http.get<any[]>(`${this.apiUrl}/studies`).pipe(
       catchError((error) => {
         console.error('Error retrieving studies:', error);
         throw error;

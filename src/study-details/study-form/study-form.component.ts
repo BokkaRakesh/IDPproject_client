@@ -17,6 +17,9 @@ import { StudyField, StudyFields } from "../interfaces/studyFile.interface";
 export class StudyFormComponent implements OnInit {
   studyForm!: FormGroup;
   statusIcons: { [key: string]: string } = {};
+  isFieldExpanded: { [key: string]: boolean } = {};  // Track expanded fields
+  commentExpanded: { [key: string]: boolean } = {};  // Track expanded comments
+  isAllExpanded = false; // Track global expand/collapse state
   @Input() mode: 'new' | 'existing' = 'new';
 
   statusOptions = [
@@ -206,5 +209,19 @@ export class StudyFormComponent implements OnInit {
 
     // Button is enabled if either one is valid
     return !(studyIdValid || studyNameValid);
+  }
+
+  toggleExpand(key: string): void {
+    this.isFieldExpanded[key] = !this.isFieldExpanded[key];
+  }
+
+  toggleComment(key: string): void {
+    this.commentExpanded[key] = !this.commentExpanded[key];
+  }
+  toggleAllFields(): void {
+    this.isAllExpanded = !this.isAllExpanded;
+    for (const field of this.fields) {
+      this.isFieldExpanded[field.key] = this.isAllExpanded;
+    }
   }
 }

@@ -1,6 +1,9 @@
 <div class="card">
-  <div class="card-header">
+  <div class="card-header d-flex justify-content-between align-items-center">
     <h5>Enter Study Details:</h5>
+    <button type="button" class="btn btn-link" (click)="toggleAllFields()">
+      <i class="bi" [ngClass]="isAllExpanded ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+    </button>
   </div>
   <div class="card-body">
     <form [formGroup]="studyForm" (ngSubmit)="onSubmit()">
@@ -16,52 +19,57 @@
       <!-- Study Name -->
       <div class="form-group bordered-block">
         <label for="studyName" class="col-form-label fw-bold">Enter Study Name:</label>
-        <input id="studyName" formControlName="studyName" class="form-control input-block"/>
+        <input id="studyName" formControlName="studyName" class="form-control input-block" />
       </div>
 
       <!-- Validation Messages -->
-      <div
-        *ngIf="studyForm.errors?.['requiredOne'] && 
-        (studyForm.controls['studyId'].touched || studyForm.controls['studyName'].touched)"
-        class="text-danger"
-      >
+      <div *ngIf="studyForm.errors?.['requiredOne'] && 
+        (studyForm.controls['studyId'].touched || studyForm.controls['studyName'].touched)" class="text-danger">
         At least one of Study ID or Study Name is required.
       </div>
 
       <!-- Space between Study ID/Name and dynamic fields -->
       <br />
-
-      <!-- Dynamic Fields -->
+      <!-- Dynamic Fields Section -->
       <div class="form-container">
         <div *ngFor="let field of fields" class="form-group bordered-block">
-          <label class="col-form-label fw-bold">{{ field.label }}:</label>
-          <div class="field-container">
-            <select
-              [formControlName]="field.key"
-              class="form-control input-block"
-              (change)="onStatusChange(field.key, $event)"
-            >
-              <option *ngFor="let option of statusOptions" [value]="option.value">
-                {{ option.label }}
-              </option>
-            </select>
-            <i class="status-icon" [class]="statusIcons[field.key]"></i>
+          <div class="d-flex align-items-center justify-content-between">
+            <label class="col-form-label fw-bold">{{ field.label }}:</label>
+            <button type="button" class="btn btn-link" (click)="toggleExpand(field.key)">
+              <i class="bi" [ngClass]="isFieldExpanded[field.key] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+            </button>
           </div>
-          <textarea
-            placeholder="Add comment"
-            [formControlName]="field.key + '_comment'"
-            class="form-control text-area-block"
-          ></textarea>
+
+          <!-- Status and Comments Section (Expand/Collapse) -->
+          <div *ngIf="isFieldExpanded[field.key]">
+            <!-- Status Dropdown -->
+            <div class="field-container">
+              <select [formControlName]="field.key" class="form-control input-block"
+                (change)="onStatusChange(field.key, $event)">
+                <option *ngFor="let option of statusOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <i class="status-icon" [class]="statusIcons[field.key]"></i>
+            </div>
+
+            <!-- Expandable Comment Section -->
+            <div class="comment-section">
+              <button type="button" class="btn btn-link" (click)="toggleComment(field.key)">
+                <i class="bi" [ngClass]="commentExpanded[field.key] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                Comments
+              </button>
+
+              <textarea *ngIf="commentExpanded[field.key]" placeholder="Add comment"
+                [formControlName]="field.key + '_comment'" class="form-control text-area-block"></textarea>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Submit Button -->
       <div class="form-actions">
-        <button
-          type="submit"
-          [disabled]="isSubmitDisabled()"
-          class="btn btn-primary"
-        >
+        <button type="submit" [disabled]="isSubmitDisabled()" class="btn btn-primary">
           Submit
         </button>
       </div>

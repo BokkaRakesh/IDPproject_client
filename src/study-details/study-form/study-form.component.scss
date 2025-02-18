@@ -75,3 +75,28 @@
   font-size: 14px;
   border-radius: 4px;
 }
+
+.comment-section {
+  margin-top: 10px;
+
+  .btn-link {
+    text-decoration: none;
+    font-size: 14px;
+    color: #007bff;
+  }
+}
+.card-header {
+  position: relative;
+}
+
+.btn-link {
+  text-decoration: none;
+  font-size: 16px;
+  color: #007bff;
+}
+
+.form-container {
+  .form-group {
+    margin-bottom: 15px;
+  }
+}

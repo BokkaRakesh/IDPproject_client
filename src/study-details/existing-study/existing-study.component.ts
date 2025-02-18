@@ -412,13 +412,15 @@ export class ExistingStudyComponent implements OnInit {
     this.isAllExpanded = !this.isAllExpanded;
     for (const field of this.selectedStudy.fields.L) {
       this.isFieldExpanded[field.M.key.S] = this.isAllExpanded;
+      this.isCommentExpanded[field.M.key.S] = true; // Ensure comments always stay open
     }
   }
-
-  toggleExpand(key: string): void {
-    this.isFieldExpanded[key] = !this.isFieldExpanded[key];
-  }
+  
   toggleComment(key: string): void {
     this.isCommentExpanded[key] = !this.isCommentExpanded[key];
+  }
+  toggleExpand(key: string): void {
+    this.isFieldExpanded[key] = !this.isFieldExpanded[key];
+    this.isCommentExpanded[key] = false;
   }
 }

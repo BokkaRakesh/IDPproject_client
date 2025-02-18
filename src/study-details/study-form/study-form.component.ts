@@ -213,6 +213,7 @@ export class StudyFormComponent implements OnInit {
 
   toggleExpand(key: string): void {
     this.isFieldExpanded[key] = !this.isFieldExpanded[key];
+    this.commentExpanded[key] = false;
   }
 
   toggleComment(key: string): void {
@@ -222,6 +223,7 @@ export class StudyFormComponent implements OnInit {
     this.isAllExpanded = !this.isAllExpanded;
     for (const field of this.fields) {
       this.isFieldExpanded[field.key] = this.isAllExpanded;
+      this.commentExpanded[field.key] = true;
     }
   }
 }

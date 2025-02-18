@@ -122,6 +122,7 @@
 
     <!-- Status Dropdown (Expand/Collapse) -->
     <div *ngIf="isFieldExpanded[field.M.key.S]">
+      <div *ngIf="field.M.key.S !== 'requestNewData'">
       <div class="field-container">
         <div class="dropdown-container d-flex align-items-center">
           <select [formControlName]="field.M.key.S" class="form-control input-block me-2" [disabled]="!isEditable">
@@ -140,6 +141,7 @@
             class="status-icon"
           ></i>
         </div>
+      </div>
       </div>
 
       <!-- Comment Section Toggle -->

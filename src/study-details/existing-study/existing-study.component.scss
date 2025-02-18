@@ -1,0 +1,262 @@
+.bi-download.disabled {
+  pointer-events: none;  /* Disable click interaction */
+  opacity: 0.5;  /* Make the icon appear faded */
+}
+.disabled-row {
+  opacity: 0.5;  /* Make the entire row appear faded */
+  pointer-events: none;  /* Disable all interactions with the row */
+}
+.card {
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 10px;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+}
+
+.card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.bordered-block {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-container {
+  border-top: solid;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.field-container {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dropdown-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.input-block, .text-area-block {
+  width: 100%;
+}
+
+.text-area-block {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.status-icon {
+  margin-left: 10px;
+  position: absolute;
+  top: 12%;
+  right: 15px;
+  transform: translateY(-50%);
+  pointer-events: none; /* Ensure the icon doesn't interfere with selecting options */
+}
+
+.bi-exclamation-circle.text-warning {
+  color: #ffc107;
+}
+
+.bi-arrow-repeat.text-primary {
+  color: #0d6efd;
+}
+
+.bi-check-circle.text-success {
+  color: #28a745;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.text-area-block {
+  height: 100px;
+}
+
+.form-group.bordered-block {
+  margin-bottom: 16px;
+}
+.scrollable-form-container {
+  max-height: 340px;
+  overflow-y: auto;  
+  padding-right: 10px; 
+}
+.bi-check-circle {
+  color: green;
+}
+
+.bi-clock {
+  color: orange;
+}
+
+.bi-x-circle {
+  color: red;
+}
+
+
+
+.tooltip-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tooltip-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.custom-tooltip {
+  position: absolute;
+  background: linear-gradient(to bottom, #4a90e2, #1c3faa); /* Cool blue gradient */
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  max-width: auto;
+  text-align: left;
+  z-index: 1000;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.custom-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px;
+  border-style: solid;
+  border-color: #1c3faa transparent transparent transparent;
+}
+
+/* Improve icon visibility */
+.custom-tooltip i {
+  font-size: 18px; /* Increase icon size */
+  vertical-align: middle;
+  margin-right: 6px;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4)); /* Soft shadow for contrast */
+}
+
+.custom-tooltip strong {
+  color: #ffeb3b; /* Bright yellow for contrast */
+  font-weight: bold;
+}
+
+.custom-tooltip ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+}
+
+.custom-tooltip li {
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.custom-tooltip li:last-child {
+  border-bottom: none;
+}
+
+.study-tooltip {
+position: absolute;
+background: linear-gradient(to bottom, #4a90e2, #1c3faa); /* Cool blue gradient */
+color: #ffffff;
+font-size: 14px;
+padding: 10px;
+border-radius: 6px;
+box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+max-width: 300px;
+word-wrap: break-word;
+text-align: left;
+z-index: 9999;
+transition: opacity 0.2s ease-in-out;
+pointer-events: none;
+}
+
+.study-tooltip::after {
+content: "";
+position: absolute;
+bottom: -8px;
+left: 50%;
+transform: translateX(-50%);
+border-width: 8px;
+border-style: solid;
+border-color: #1c3faa transparent transparent transparent; /* Match blue gradient */
+}
+
+.study-tooltip strong {
+color: #ffeb3b; /* Bright yellow for headers */
+font-weight: bold;
+}
+
+.study-tooltip ul {
+list-style-type: none;
+padding: 0;
+margin: 5px 0 0 0;
+}
+
+.study-tooltip li {
+font-size: 13px;
+padding: 3px 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.study-tooltip li:last-child {
+border-bottom: none;
+}
+
+.study-tooltip.fade-out {
+opacity: 0;
+transition: opacity 0.2s ease-out;
+}
+
+
+.text-custom{
+  color: #0d6efd !important;
+}
+
+#study-detail-scroll{
+  max-height: 100000px;
+  overflow-y: auto;  
+  padding-right: 10px;
+}
+
+
+
+
+
+

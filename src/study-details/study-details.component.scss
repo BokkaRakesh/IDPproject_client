@@ -1,0 +1,198 @@
+
+/* General Container Styling */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Card Styling */
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  margin: 20px auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &-header {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    color: #fff;
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 15px;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  &-body {
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 0 0 1rem 1rem;
+  }
+
+  &-footer {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-top: 1px solid #e0e0e0;
+  }
+}
+
+/* Radio Button Styling */
+.form-check {
+  margin: 0 10px;
+
+  &-input {
+    accent-color: #007bff;
+    margin-right: 8px;
+    transform: scale(1.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.3); /* Slight zoom on hover */
+    }
+
+    &:focus {
+      outline: 2px dashed #007bff;
+      outline-offset: 4px;
+    }
+
+    &:checked {
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+  }
+
+  &-label {
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #0056b3; /* Darker blue on hover */
+    }
+  }
+}
+
+/* Input and Search Box Styling */
+.input-group {
+  margin-bottom: 15px;
+
+  &-text {
+    background-color: #f8f9fa;
+    border-right: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6c757d;
+  }
+
+  input.form-control {
+    border-left: none;
+    border-radius: 0.5rem;
+    box-shadow: none;
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+  }
+}
+
+/* Table Styling */
+table {
+  &.table {
+    font-size: 1rem;
+    border-collapse: collapse;
+    width: 100%;
+    text-align: left;
+    margin-top: 15px;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+
+    &-bordered {
+      border: 1px solid #dee2e6;
+
+      th,
+      td {
+        border: 1px solid #dee2e6;
+        padding: 15px;
+      }
+    }
+
+    thead.thead-light {
+      background: linear-gradient(90deg, #007bff, #0056b3);
+      color: white;
+      font-weight: bold;
+
+      th {
+        padding: 15px;
+        text-align: left;
+      }
+    }
+
+    tbody tr {
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+/* Button Styling */
+button.btn {
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  padding: 12px 24px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: white;
+  font-weight: bold;
+  border: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(90deg, #0056b3, #003f8a);
+    transform: translateY(-2px);
+  }
+}
+
+/* Header and Typography Styling */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  color: #333;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+/* Custom Pointer Cursor */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Global Hover Effects */
+*:hover {
+  transition: all 0.3s ease;
+}
+
+/* Body Background */
+body {
+  background: #f9f9fc;
+}
+#heading{
+  color: #ffffff;
+}

@@ -1,0 +1,148 @@
+<!-- Search Input -->
+<div class="input-group mb-3">
+  <span class="input-group-text" id="inputGroup-sizing-sm">
+    <i class="bi bi-search"></i>
+  </span>
+  <input
+    type="text"
+    class="form-control"
+    [(ngModel)]="searchQuery"
+    placeholder="Search by Study ID or Study Name"
+    (ngModelChange)="filterStudies()"
+  />
+</div>
+
+<!-- Table Displaying Studies -->
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">List Of Existing Studies</h5>
+    <button 
+      class="btn btn-outline-light btn-sm" 
+      (click)="clearSelection()" 
+      title="Refresh and clear selection"
+    >
+      <i class="bi bi-arrow-clockwise"></i>
+    </button>
+  </div>
+  <div class="card-body scrollable-form-container">  
+  <div class="card-body">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Study ID</th>
+          <th>Study Name</th>
+          <th>Current Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let study of filteredStudies">
+          <tr *ngIf="isStudyVisible(study)" 
+              [ngClass]="{
+                'text-custom': computeStatusMetrics(study)['inProgress'] > 0,
+                'text-danger': computeStatusMetrics(study)['notYetstarted'] > 0,
+                'text-success': computeStatusMetrics(study)['complete'] > 0
+              }">
+            <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)">
+              {{ study.studyId.S }}
+            </td>
+            <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)">
+              {{ study.studyName.S }}
+            </td>
+            <td style="position: relative;">
+              <span>
+                {{ computeStudyStatus(study) }}
+              </span>
+              <i class="bi bi-info-circle text-muted ms-2" [appInfoIcon]="study"></i>
+            </td>
+          </tr>
+        </ng-container>
+        
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- Study Form -->
+<div *ngIf="studyForm && selectedStudy !== null" class="mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white" style="position: relative;">
+      <h5>Detailed Status of Study {{ selectedStudy?.studyId.S }}</h5>
+      <div class="form-check form-switch float-end" style="position: absolute; top: 10px; right: 10px;">
+        <label class="form-check-label" for="toggleForm">Edit Mode</label>
+        <input 
+          class="form-check-input" 
+          type="checkbox" 
+          id="toggleForm" 
+          [(ngModel)]="isEditable" 
+          (change)="onToggleEditMode()" />
+      </div>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="studyForm" (ngSubmit)="onSubmit()">
+        <!-- Study ID -->
+        <div class="form-group bordered-block">
+          <label for="studyId" class="col-form-label fw-bold">Study ID:</label>
+          <input id="studyId" formControlName="studyId" class="form-control input-block" [disabled]="!isEditable" />
+          <div *ngIf="studyForm.controls['studyId'].hasError('studyIdExists') && studyForm.controls['studyId'].touched" class="text-danger">
+            Study ID already exists.
+          </div>
+        </div>
+
+        <!-- Study Name -->
+        <div class="form-group bordered-block">
+          <label for="studyName" class="col-form-label fw-bold">Study Name:</label>
+          <input
+            id="studyName"
+            formControlName="studyName"
+            class="form-control input-block"
+            [disabled]="!isEditable"/>
+        </div>
+
+        <!-- Validation Messages -->
+        <div *ngIf="studyForm.hasError('requiredOne') && (studyForm.dirty || studyForm.touched)" class="text-danger">
+          At least one of Study ID, Study Name, or Fields is required.
+        </div>
+        
+        <!-- Dynamic Fields -->
+        <div class="form-container scrollable-form-container" id="study-detail-scroll">
+          <div *ngFor="let field of selectedStudy.fields.L" class="form-group bordered-block">
+            <label class="col-form-label fw-bold">{{ field.M.label.S }}:</label>
+            <div class="field-container">
+              <div class="dropdown-container d-flex align-items-center">
+                <select [formControlName]="field.M.key.S" class="form-control input-block me-2" [disabled]="!isEditable">
+                  <option *ngFor="let option of statusOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+                <i
+                  *ngIf="studyForm.get(field.M.key.S)?.value"
+                  [ngClass]="{
+                    'bi-check-circle text-success': studyForm.get(field.M.key.S)?.value === 'complete',
+                    'bi-arrow-repeat text-primary': studyForm.get(field.M.key.S)?.value === 'inProgress',
+                    'bi-exclamation-circle text-warning': studyForm.get(field.M.key.S)?.value === 'notyetstarted',
+                    'bi-ban text-danger': studyForm.get(field.M.key.S)?.value === 'notApplicable'
+                  }"
+                  class="status-icon"
+                ></i>
+              </div>
+              <textarea
+                placeholder="Add comment"
+                formControlName="{{ field.M.key.S + '_comment' }}"
+                class="form-control text-area-block"
+                [disabled]="!isEditable"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button type="submit" [disabled]="studyForm.hasError('requiredOne') && (studyForm.dirty || studyForm.touched)" class="btn btn-primary mt-3 float-end">
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -66,18 +66,24 @@
 <!-- Study Form -->
 <div *ngIf="studyForm && selectedStudy !== null" class="mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white" style="position: relative;">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
       <h5>Detailed Status of Study {{ selectedStudy?.studyId.S }}</h5>
-      <div class="form-check form-switch float-end" style="position: absolute; top: 10px; right: 10px;">
-        <label class="form-check-label" for="toggleForm">Edit Mode</label>
-        <input 
-          class="form-check-input" 
-          type="checkbox" 
-          id="toggleForm" 
-          [(ngModel)]="isEditable" 
-          (change)="onToggleEditMode()" />
+      <div class="d-flex align-items-center">
+        <div class="form-check form-switch me-3">
+          <label class="form-check-label" for="toggleForm">Edit Mode</label>
+          <input 
+            class="form-check-input" 
+            type="checkbox" 
+            id="toggleForm" 
+            [(ngModel)]="isEditable" 
+            (change)="onToggleEditMode()" />
+        </div>
+        <button type="button" class="btn btn-outline-light btn-sm" (click)="toggleAllFields()">
+          <i class="bi" [ngClass]="isAllExpanded ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+        </button>
       </div>
     </div>
+
     <div class="card-body">
       <form [formGroup]="studyForm" (ngSubmit)="onSubmit()">
         <!-- Study ID -->
@@ -104,37 +110,59 @@
           At least one of Study ID, Study Name, or Fields is required.
         </div>
         
-        <!-- Dynamic Fields -->
-        <div class="form-container scrollable-form-container" id="study-detail-scroll">
-          <div *ngFor="let field of selectedStudy.fields.L" class="form-group bordered-block">
-            <label class="col-form-label fw-bold">{{ field.M.label.S }}:</label>
-            <div class="field-container">
-              <div class="dropdown-container d-flex align-items-center">
-                <select [formControlName]="field.M.key.S" class="form-control input-block me-2" [disabled]="!isEditable">
-                  <option *ngFor="let option of statusOptions" [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-                <i
-                  *ngIf="studyForm.get(field.M.key.S)?.value"
-                  [ngClass]="{
-                    'bi-check-circle text-success': studyForm.get(field.M.key.S)?.value === 'complete',
-                    'bi-arrow-repeat text-primary': studyForm.get(field.M.key.S)?.value === 'inProgress',
-                    'bi-exclamation-circle text-warning': studyForm.get(field.M.key.S)?.value === 'notyetstarted',
-                    'bi-ban text-danger': studyForm.get(field.M.key.S)?.value === 'notApplicable'
-                  }"
-                  class="status-icon"
-                ></i>
-              </div>
-              <textarea
-                placeholder="Add comment"
-                formControlName="{{ field.M.key.S + '_comment' }}"
-                class="form-control text-area-block"
-                [disabled]="!isEditable"
-              ></textarea>
-            </div>
-          </div>
+<!-- Dynamic Fields -->
+<div class="form-container scrollable-form-container" id="study-detail-scroll">
+  <div *ngFor="let field of selectedStudy.fields.L" class="form-group bordered-block">
+    <div class="d-flex align-items-center justify-content-between">
+      <label class="col-form-label fw-bold">{{ field.M.label.S }}:</label>
+      <button type="button" class="btn btn-link" (click)="toggleExpand(field.M.key.S)">
+        <i class="bi" [ngClass]="isFieldExpanded[field.M.key.S] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+      </button>
+    </div>
+
+    <!-- Status Dropdown (Expand/Collapse) -->
+    <div *ngIf="isFieldExpanded[field.M.key.S]">
+      <div class="field-container">
+        <div class="dropdown-container d-flex align-items-center">
+          <select [formControlName]="field.M.key.S" class="form-control input-block me-2" [disabled]="!isEditable">
+            <option *ngFor="let option of statusOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+          <i
+            *ngIf="studyForm.get(field.M.key.S)?.value"
+            [ngClass]="{
+              'bi-check-circle text-success': studyForm.get(field.M.key.S)?.value === 'complete',
+              'bi-arrow-repeat text-primary': studyForm.get(field.M.key.S)?.value === 'inProgress',
+              'bi-exclamation-circle text-warning': studyForm.get(field.M.key.S)?.value === 'notyetstarted',
+              'bi-ban text-danger': studyForm.get(field.M.key.S)?.value === 'notApplicable'
+            }"
+            class="status-icon"
+          ></i>
         </div>
+      </div>
+
+      <!-- Comment Section Toggle -->
+      <div class="mt-2">
+        <button type="button" class="btn btn-link" (click)="toggleComment(field.M.key.S)">
+          <i class="bi" [ngClass]="isCommentExpanded[field.M.key.S] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+          Comments
+        </button>
+
+        <div *ngIf="isCommentExpanded[field.M.key.S]">
+          <textarea
+            placeholder="Add comment"
+            formControlName="{{ field.M.key.S + '_comment' }}"
+            class="form-control text-area-block"
+            [disabled]="!isEditable"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
         <!-- Submit Button -->
         <div class="form-actions">
@@ -146,3 +174,4 @@
     </div>
   </div>
 </div>
+

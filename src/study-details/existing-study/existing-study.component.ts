@@ -24,6 +24,9 @@ export class ExistingStudyComponent implements OnInit {
   studies: any[] = []; // Data for existing studies (to populate TreeTable)
   filteredStudies: any[] = []; // List of filtered studies based on the search query
   studyForm!: FormGroup; // The reactive form to edit the selected study
+  isFieldExpanded: { [key: string]: boolean } = {};  // Track expanded fields
+  isCommentExpanded: { [key: string]: boolean } = {};  // Track expanded comments
+  isAllExpanded = false; // Track global expand/collapse state
   statusOptions = [
     { label: 'Not Yet started', value: 'notyetstarted' },
     { label: 'In Progress', value: 'inProgress' },
@@ -404,5 +407,18 @@ export class ExistingStudyComponent implements OnInit {
       default:
         return 'Not Yet Started';
     }
+  }
+  toggleAllFields(): void {
+    this.isAllExpanded = !this.isAllExpanded;
+    for (const field of this.selectedStudy.fields.L) {
+      this.isFieldExpanded[field.M.key.S] = this.isAllExpanded;
+    }
+  }
+
+  toggleExpand(key: string): void {
+    this.isFieldExpanded[key] = !this.isFieldExpanded[key];
+  }
+  toggleComment(key: string): void {
+    this.isCommentExpanded[key] = !this.isCommentExpanded[key];
   }
 }

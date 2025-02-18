@@ -255,6 +255,28 @@ transition: opacity 0.2s ease-out;
   padding-right: 10px;
 }
 
+.card-header {
+  position: relative;
+}
+.form-container {
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+
+
+  .btn-link {
+    text-decoration: none;
+    font-size: 16px;
+    color: #007bff;
+    cursor: pointer;
+  }
+  
+  .btn-link i {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+}
 
 
 

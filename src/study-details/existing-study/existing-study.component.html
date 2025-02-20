@@ -25,41 +25,48 @@
     </button>
   </div>
   <div class="card-body scrollable-form-container">  
-  <div class="card-body">
-    <table class="table table-bordered table-hover">
-      <thead class="thead-light">
-        <tr>
-          <th>Study ID</th>
-          <th>Study Name</th>
-          <th>Current Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let study of filteredStudies">
-          <tr *ngIf="isStudyVisible(study)" 
-              [ngClass]="{
-                'text-custom': computeStatusMetrics(study)['inProgress'] > 0,
-                'text-danger': computeStatusMetrics(study)['notYetstarted'] > 0,
-                'text-success': computeStatusMetrics(study)['complete'] > 0
-              }">
-            <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)">
-              {{ study.studyId.S }}
-            </td>
-            <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)">
-              {{ study.studyName.S }}
-            </td>
-            <td style="position: relative;">
-              <span>
-                {{ computeStudyStatus(study) }}
-              </span>
-              <i class="bi bi-info-circle text-muted ms-2" [appInfoIcon]="study"></i>
-            </td>
+    <div class="card-body">
+      <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Study ID</th>
+            <th>Study Name</th>
+            <th>Current Status</th>
           </tr>
-        </ng-container>
-        
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let study of paginatedStudies">
+            <tr *ngIf="isStudyVisible(study)" 
+                [ngClass]="{
+                  'text-custom': computeStatusMetrics(study)['inProgress'] > 0,
+                  'text-danger': computeStatusMetrics(study)['notYetstarted'] > 0,
+                  'text-success': computeStatusMetrics(study)['complete'] > 0
+                }">
+              <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)">
+                {{ study.studyId.S }}
+              </td>
+              <td [appTooltipStatus]="computeStatusMetrics(study)" (click)="onSelectStudy(study)">
+                {{ study.studyName.S }}
+              </td>
+              <td style="position: relative;">
+                <span>
+                  {{ computeStudyStatus(study) }}
+                </span>
+                <i class="bi bi-info-circle text-muted ms-2" [appInfoIcon]="study"></i>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+  
+      <!-- Pagination Controls -->
+      <div class="d-flex justify-content-between mt-3" *ngIf="showButtons">
+        <button class="btn btn-primary" (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button class="btn btn-primary" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+      </div>
   </div>
+  
 </div>
 </div>
 

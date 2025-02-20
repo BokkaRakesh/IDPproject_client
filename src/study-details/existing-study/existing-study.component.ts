@@ -22,11 +22,14 @@ export class ExistingStudyComponent implements OnInit {
   selectedStudyId: string | null = null; // ID of the selected study
   selectedStudyName: string | null = null; // ID of the selected study
   studies: any[] = []; // Data for existing studies (to populate TreeTable)
-  filteredStudies: any[] = []; // List of filtered studies based on the search query
+  @Input() filteredStudies: any[] = [];  
   studyForm!: FormGroup; // The reactive form to edit the selected study
   isFieldExpanded: { [key: string]: boolean } = {};  // Track expanded fields
   isCommentExpanded: { [key: string]: boolean } = {};  // Track expanded comments
   isAllExpanded = false; // Track global expand/collapse state
+  currentPage: number = 1;
+  pageSize: number = 3; // Load only 5 records per page
+  totalPages: number = 0;
   statusOptions = [
     { label: 'Not Yet started', value: 'notyetstarted' },
     { label: 'In Progress', value: 'inProgress' },
@@ -66,6 +69,7 @@ export class ExistingStudyComponent implements OnInit {
   // Flag to check if form is in edit mode
   isEditable: boolean = false;
   isLoading: boolean = false;
+  showButtons: boolean = false;
 
   constructor(
     private studyService: StudyService, 
@@ -74,6 +78,7 @@ export class ExistingStudyComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    
     this.getStudies();
   }
   getStudies(): void {
@@ -91,6 +96,7 @@ export class ExistingStudyComponent implements OnInit {
         // Force Angular UI update
         this.cdr.detectChanges();
         this.cdr.markForCheck();
+        this.calculateTotalPages();
       },
       error: (err) => {
         console.error('Error fetching studies:', err);
@@ -143,7 +149,7 @@ export class ExistingStudyComponent implements OnInit {
     // Check if the study matches the selected study ID or name, or if no filters are applied
     const matchesStudyId = !this.selectedStudyId || study.studyId === this.selectedStudyId;
     const matchesStudyName = !this.selectedStudyName || study.studyName === this.selectedStudyName;
-  
+    this.showButtons = !this.selectedStudyId || !this.selectedStudyName;
     return matchesStudyId && matchesStudyName;
   }
   
@@ -161,6 +167,7 @@ export class ExistingStudyComponent implements OnInit {
     this.selectedStudyName = null;
     this.selectedStudy = null;
     this.studyForm.reset();
+    this.showButtons = true;
   }
 
   private initializeForm() {
@@ -317,7 +324,6 @@ export class ExistingStudyComponent implements OnInit {
     if (studyIdValid || studyNameValid) {
       const formData = this.studyForm.getRawValue(); // Include disabled fields like studyId
   
-      // ✅ Extract `fields.L` properly before using `.find()`
       const fieldList = this.selectedStudy.fields?.L?.map((field: any) => field.M) || [];
   
       const updatedStudyData = {
@@ -437,5 +443,25 @@ export class ExistingStudyComponent implements OnInit {
   toggleExpand(key: string): void {
     this.isFieldExpanded[key] = !this.isFieldExpanded[key];
     this.isCommentExpanded[key] = false;
+  }
+  get paginatedStudies(): any[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.filteredStudies.slice(startIndex, endIndex);
+  }
+
+  calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.filteredStudies.length / this.pageSize);
+  }
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   }
 }

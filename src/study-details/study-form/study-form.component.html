@@ -42,19 +42,31 @@
 
     <!-- Conditional Rendering: Show only comment box for specific field -->
     <div *ngIf="isFieldExpanded[field.key]">
-      <div *ngIf="field.key !== 'requestNewData'">
         <!-- Status Dropdown for all other fields -->
-        <div class="field-container">
-          <select [formControlName]="field.key" class="form-control input-block"
-            (change)="onStatusChange(field.key, $event)">
-            <option *ngFor="let option of statusOptions" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-          <i class="status-icon" [class]="statusIcons[field.key]"></i>
+        <div class="row">
+          <div [ngClass]="field.key === 'requestNewData' ? 'col-12' : 'col'">
+            <div class="field-container">
+              <select [formControlName]="field.key + '_icdpUsers'" class="form-control input-block">
+                <option value="" selected disabled hidden>Select User</option>
+                <option *ngFor="let option of field.icdp_users" [value]="option.keyUser">
+                  {{ option.keyUser }}
+                </option>
+              </select>
+              <i class='bi bi-person-circle status-icon text-primary'></i>
+            </div>
+          </div>
+          <div class="col">
+            <div class="field-container" *ngIf="field.key !== 'requestNewData'"> 
+              <select [formControlName]="field.key" class="form-control input-block"
+              (change)="onStatusChange(field.key, $event)">
+              <option *ngFor="let option of statusOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <i class="status-icon" [class]="statusIcons[field.key]"></i>
+            </div>
+          </div>
         </div>
-      </div>
-
       <!-- Comment Section (Always Visible) -->
       <div class="comment-section">
         <button type="button" class="btn btn-link" (click)="toggleComment(field.key)">

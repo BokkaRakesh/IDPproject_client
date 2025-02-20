@@ -33,6 +33,21 @@ export class ExistingStudyComponent implements OnInit {
     { label: 'Complete', value: 'complete' },
     { label: 'Not Applicable', value: 'notApplicable' },
   ];
+  icdp_users = [
+        { keyUser: "Alex Dumay", email: "alex.dumay@icdp.com" },
+        { keyUser: "Moushami Choudhari", email: "moushami.choudhari@icdp.com" },
+        { keyUser: "Abinaya Ramachandran", email: "abinaya.ramachandran@icdp.com" },
+        { keyUser: "Manisha Bharambe", email: "manisha.bharambe@icdp.com" },
+        { keyUser: "Manjunath Shivamogga", email: "manjunath.shivamogga@icdp.com" },
+        { keyUser: "Nishit Kothari", email: "nishit.kothari@icdp.com" },
+        { keyUser: "Nitin Pathania", email: "nitin.pathania@icdp.com" },
+        { keyUser: "Prasad Admane", email: "prasad.admane@icdp.com" },
+        { keyUser: "Priti Prajapati", email: "priti.prajapati@icdp.com" },
+        { keyUser: "Reena John", email: "reena.john@icdp.com" },
+        { keyUser: "Sandeep Ahuja", email: "sandeep.ahuja@icdp.com" },
+        { keyUser: "Sneha Agarkhed", email: "sneha.agarkhed@icdp.com" },
+        { keyUser: "Uddhav Ansurkar", email: "uddhav.ansurkar@icdp.com" }
+      ] 
   fields = [
     { key: 'requestNewData', label: 'Study team request for new data ingestion' },
     { key: 'onboardingDocs', label: 'New study onboarding information(gform) from the study team' },

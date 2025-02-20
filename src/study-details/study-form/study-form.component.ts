@@ -243,6 +243,7 @@ export class StudyFormComponent implements OnInit {
         ...this.fields.reduce((acc: { [key: string]: any }, field) => {
           acc[field.key] = ['notyetstarted', Validators.required];
           acc[`${field.key}_comment`] = [''];
+          acc[`${field.key}_icdpUsers`] = [''];
           return acc;
         }, {}),
       },

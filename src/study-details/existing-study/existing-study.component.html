@@ -129,6 +129,33 @@
 
     <!-- Status Dropdown (Expand/Collapse) -->
     <div *ngIf="isFieldExpanded[field.M.key.S]">
+
+      <div class="row mb-2">
+        <div class="col">
+          <label for="{{ field.M.key.S }}_toDate" class="col-form-label fw-bold">ETA To Date:</label>
+          <input type="date" id="{{ field.M.key.S }}_toDate" [formControlName]="field.M.key.S + '_toDate'" class="form-control input-block" />
+      
+          <!-- Required Validation -->
+          <div *ngIf="studyForm.get(field.M.key.S + '_toDate')?.hasError('required')" class="text-danger">
+            To Date is required.
+          </div>
+        </div>
+      
+        <div class="col">
+          <label for="{{ field.M.key.S }}_fromDate" class="col-form-label fw-bold">ETA From Date:</label>
+          <input type="date" id="{{ field.M.key.S }}_fromDate" [formControlName]="field.M.key.S + '_fromDate'" class="form-control input-block" />
+      
+          <!-- Required Validation -->
+          <!-- <div *ngIf="studyForm.get(field.key + '_fromDate')?.hasError('required')" class="text-danger">
+            From Date is required.
+          </div> -->
+      
+        
+        </div>
+          <!-- Date Range Validation -->
+         
+      </div>
+
       <div class="row">
         <div [ngClass]="field.M.key.S === 'requestNewData' ? 'col-12' : 'col'">
           <div class="field-container">

@@ -321,12 +321,15 @@ export class ExistingStudyComponent implements OnInit {
         studyName: formData.studyName || null, // Capture updated studyName
         fields: Object.keys(formData)
           .filter((key) => key !== 'studyId' && key !== 'studyName' && key !== 'uId') // Exclude non-field keys
-          .filter((key) => !key.endsWith('_comment')) // Handle comments separately
+          .filter((key) => !key.endsWith('_comment') && !key.endsWith('_icdp_users') && !key.endsWith('_fromDate') && !key.endsWith('_toDate')) // Handle comments separately
           .map((key) => ({
             key: key, // Form key (from the form)
-            label: fieldList.find((field: any) => field.key.S === key)?.label.S || '', // ✅ Extract label correctly
+            label: fieldList.find((field: any) => field.key.S === key)?.label.S || '', // Extract label correctly
             status: formData[key], // Get updated status value from form
             comment: formData[key + '_comment'] || '', // Get updated comment from form
+            fromDate: formData[key + '_fromDate'] || '',
+            toDate:  formData[key + '_toDate'] || '',
+            icdp_users:  formData[key + '_icdp_users'] || '',
           })),
         createdAt: this.selectedStudy.createdAt?.S || new Date().toISOString(),
         updatedAt: new Date().toISOString(), // Capture the updated timestamp

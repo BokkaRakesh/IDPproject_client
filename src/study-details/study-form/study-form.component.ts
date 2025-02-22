@@ -336,18 +336,6 @@ export class StudyFormComponent implements OnInit {
       default: return '';
     }
   }
-  initializeForm(): void {
-    this.studyForm = this.fb.group({
-      studyId: ['', Validators.required],
-      studyName: ['', Validators.required],
-      ...this.fields.reduce((acc: { [key: string]: any }, field) => {
-        acc[field.key] = ['notyetstarted', Validators.required];
-        acc[field.key + '_comment'] = [''];
-        return acc;
-      }, {}),
-    });
-  }
-
 
   atLeastOneRequiredValidator(fields: string[]) {
     return (formGroup: FormGroup): { [key: string]: boolean } | null => {

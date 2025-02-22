@@ -129,27 +129,42 @@
 
     <!-- Status Dropdown (Expand/Collapse) -->
     <div *ngIf="isFieldExpanded[field.M.key.S]">
-      <div *ngIf="field.M.key.S !== 'requestNewData'">
-      <div class="field-container">
-        <div class="dropdown-container d-flex align-items-center">
-          <select [formControlName]="field.M.key.S" class="form-control input-block me-2" [disabled]="!isEditable">
-            <option *ngFor="let option of statusOptions" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-          <i
-            *ngIf="studyForm.get(field.M.key.S)?.value"
-            [ngClass]="{
-              'bi-check-circle text-success': studyForm.get(field.M.key.S)?.value === 'complete',
-              'bi-arrow-repeat text-primary': studyForm.get(field.M.key.S)?.value === 'inProgress',
-              'bi-exclamation-circle text-warning': studyForm.get(field.M.key.S)?.value === 'notyetstarted',
-              'bi-ban text-danger': studyForm.get(field.M.key.S)?.value === 'notApplicable'
-            }"
-            class="status-icon"
-          ></i>
+      
+      <div class="row">
+        <div [ngClass]="field.M.key.S === 'requestNewData' ? 'col-12' : 'col'">
+          <div class="field-container">
+            <select formControlName="{{ field.M.key.S + '_icdp_users' }}" class="form-control input-block">
+              <option value="">Select</option>
+              <option *ngFor="let option of icdp_users" [value]="option.keyUser">
+                {{ option.keyUser }}
+              </option>
+            </select>
+            <i class='bi bi-person-circle status-icon status-icon-icdp text-primary'></i>
+          </div>
+        </div>
+        <div class="col">
+            <div class="field-container"  *ngIf="field.M.key.S !== 'requestNewData'">
+              <div class="dropdown-container d-flex align-items-center">
+                <select [formControlName]="field.M.key.S" class="form-control input-block me-2" [disabled]="!isEditable">
+                  <option *ngFor="let option of statusOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+                <i
+                  *ngIf="studyForm.get(field.M.key.S)?.value"
+                  [ngClass]="{
+                    'bi-check-circle text-success': studyForm.get(field.M.key.S)?.value === 'complete',
+                    'bi-arrow-repeat text-primary': studyForm.get(field.M.key.S)?.value === 'inProgress',
+                    'bi-exclamation-circle text-warning': studyForm.get(field.M.key.S)?.value === 'notyetstarted',
+                    'bi-ban text-danger': studyForm.get(field.M.key.S)?.value === 'notApplicable'
+                  }"
+                  class="status-icon"
+                ></i>
+              </div>
+            </div>
         </div>
       </div>
-      </div>
+     
 
       <!-- Comment Section Toggle -->
       <div class="mt-2">

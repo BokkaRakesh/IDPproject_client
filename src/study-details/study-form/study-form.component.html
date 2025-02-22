@@ -80,7 +80,7 @@
           <div [ngClass]="field.key === 'requestNewData' ? 'col-12' : 'col'">
             <div class="field-container">
               <select [formControlName]="field.key + '_icdpUsers'" class="form-control input-block">
-                <option value="null" selected disabled hidden>Select User</option>
+                <option value="" selected disabled hidden>Select User</option>
                 <option *ngFor="let option of field.icdp_users" [value]="option.keyUser">
                   {{ option.keyUser }}
                 </option>

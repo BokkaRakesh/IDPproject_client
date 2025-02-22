@@ -51,21 +51,6 @@ export class ExistingStudyComponent implements OnInit {
         { keyUser: "Sneha Agarkhed", email: "sneha.agarkhed@icdp.com" },
         { keyUser: "Uddhav Ansurkar", email: "uddhav.ansurkar@icdp.com" }
       ] 
-  fields = [
-    { key: 'requestNewData', label: 'Study team request for new data ingestion' },
-    { key: 'onboardingDocs', label: 'New study onboarding information(gform) from the study team' },
-    { key: 'jiraCreation', label: 'Jira creation on ICDP dashboard' },
-    { key: 'apolloMetaRequest', label: 'Apollo meta request creation and approval' },
-    { key: 'idtaCreation', label: 'Image data tranfer agreement creation and approval' },
-    { key: 's3Bucket', label: 'AWS S3 bucket creation and testing with the vendor' },
-    { key: 'sampleDataTransfer', label: 'Sample data transfer with transfer log' },
-    { key: 'sampleDataValidationFlywheel', label: 'Sample data ingestion and validation on GIP' },
-    { key: 'sampleDataIngestionConfirmation', label: 'Sample data ingestion confirmation to the vendor' },
-    { key: 'fullDatasetTransfer', label: 'Full dataset transfer by the vendor' },
-    { key: 'fullDatasetIngestionFlywheel', label: 'Full dataset ingestion on GIP' },
-    { key: 'fullDatasetValidationVendor', label: 'Full dataset validation and confirmation to the vendor' },
-    { key: 'datasetAvailability', label: 'Dataset availability confirmation to the study team' }
-  ];
   // Flag to check if form is in edit mode
   isEditable: boolean = false;
   isLoading: boolean = false;
@@ -191,12 +176,16 @@ export class ExistingStudyComponent implements OnInit {
     //  Process fields correctly
     const requiredFields: string[] = [];
   
-    fieldsArray.forEach((fieldWrapper: any) => {
+    fieldsArray?.forEach((fieldWrapper: any) => {
       const field = fieldWrapper.M; // Extract the actual field data
       const fieldKey = field.key.S;
       
       fieldsGroup[fieldKey] = [{ value: field.status.S, disabled: true }, Validators.required];
       fieldsGroup[fieldKey + '_comment'] = [{ value: field.comment.S || '', disabled: true }];
+      fieldsGroup[fieldKey + '_icdp_users'] = [{ value: field?.icdp_users?.S || '', disabled: true }];
+      fieldsGroup[fieldKey + '_toDate'] = [{ value: field?.toDate?.S || '', disabled: true }];
+      fieldsGroup[fieldKey + '_fromDate'] = [{ value: field?.fromDate?.S || '', disabled: true }];
+
       requiredFields.push(fieldKey);
     });
   

@@ -242,10 +242,10 @@ export class StudyFormComponent implements OnInit {
         studyName: ['', Validators.required],
         ...this.fields.reduce((acc: { [key: string]: any }, field) => {
           acc[field.key] = ['notyetstarted', Validators.required];
-          acc[`${field.key}_comment`] = [null];
-          acc[`${field.key}_icdpUsers`] = [null];
-          acc[`${field.key}_toDate`] = [null, Validators.required];
-          acc[`${field.key}_fromDate`] = [null, Validators.required];
+          acc[`${field.key}_comment`] = [''];
+          acc[`${field.key}_icdpUsers`] = [''];
+          acc[`${field.key}_toDate`] = ['', Validators.required];
+          acc[`${field.key}_fromDate`] = ['', Validators.required];
           return acc;
         }, {}),
       },

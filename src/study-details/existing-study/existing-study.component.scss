@@ -68,10 +68,13 @@
 .status-icon {
   margin-left: 10px;
   position: absolute;
-  top: 12%;
+  top: 36%;
   right: 15px;
   transform: translateY(-50%);
   pointer-events: none; /* Ensure the icon doesn't interfere with selecting options */
+}
+.status-icon-icdp {
+  top: 50% !important;
 }
 
 .bi-exclamation-circle.text-warning {

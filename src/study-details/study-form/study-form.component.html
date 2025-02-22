@@ -43,11 +43,44 @@
     <!-- Conditional Rendering: Show only comment box for specific field -->
     <div *ngIf="isFieldExpanded[field.key]">
         <!-- Status Dropdown for all other fields -->
+        <div class="row mb-2">
+          <div class="col">
+            <label for="{{ field.key }}_toDate" class="col-form-label fw-bold">ETA To Date:</label>
+            <input type="date" id="{{ field.key }}_toDate" [formControlName]="field.key + '_toDate'" class="form-control input-block" />
+        
+            <!-- Required Validation -->
+            <div *ngIf="studyForm.get(field.key + '_toDate')?.hasError('required')" class="text-danger">
+              To Date is required.
+            </div>
+          </div>
+        
+          <div class="col">
+            <label for="{{ field.key }}_fromDate" class="col-form-label fw-bold">ETA From Date:</label>
+            <input type="date" id="{{ field.key }}_fromDate" [formControlName]="field.key + '_fromDate'" class="form-control input-block" />
+        
+            <!-- Required Validation -->
+            <div *ngIf="studyForm.get(field.key + '_fromDate')?.hasError('required')" class="text-danger">
+              From Date is required.
+            </div>
+        
+          
+          </div>
+            <!-- Date Range Validation -->
+           
+        </div>
+        <!-- <div class="row">
+          <div class="col">
+            <div *ngIf="studyForm.get(field.key + '_fromDate')?.hasError('invalidDateRange') && studyForm.get(field.key + '_toDate')?.hasError('invalidDateRange')" class="text-danger">
+              From Date cannot be later than To Date.
+            </div>
+          </div>
+        </div> -->
+        
         <div class="row">
           <div [ngClass]="field.key === 'requestNewData' ? 'col-12' : 'col'">
             <div class="field-container">
               <select [formControlName]="field.key + '_icdpUsers'" class="form-control input-block">
-                <option value="" selected disabled hidden>Select User</option>
+                <option value="null" selected disabled hidden>Select User</option>
                 <option *ngFor="let option of field.icdp_users" [value]="option.keyUser">
                   {{ option.keyUser }}
                 </option>

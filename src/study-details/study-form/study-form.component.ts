@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit } from "@angular/core";
-import { FormGroup, FormBuilder, Validators, AsyncValidatorFn, AbstractControl, ReactiveFormsModule } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators, AsyncValidatorFn, AbstractControl, ReactiveFormsModule, ValidatorFn, ValidationErrors } from "@angular/forms";
 import { StudyService } from "../services/study.service";
 import { Observable, of } from "rxjs";
 import { map, catchError, debounceTime } from "rxjs/operators";
@@ -242,15 +242,69 @@ export class StudyFormComponent implements OnInit {
         studyName: ['', Validators.required],
         ...this.fields.reduce((acc: { [key: string]: any }, field) => {
           acc[field.key] = ['notyetstarted', Validators.required];
-          acc[`${field.key}_comment`] = [''];
-          acc[`${field.key}_icdpUsers`] = [''];
+          acc[`${field.key}_comment`] = [null];
+          acc[`${field.key}_icdpUsers`] = [null];
+          acc[`${field.key}_toDate`] = [null, Validators.required];
+          acc[`${field.key}_fromDate`] = [null, Validators.required];
           return acc;
         }, {}),
       },
-      { validators: this.atLeastOneRequiredValidator(['studyId', 'studyName']) }
+      { validators:this.atLeastOneRequiredValidator(['studyId', 'studyName']),
+       
+       }
     );
     this.initializeStatusIcons();
   }
+
+  dateRangeValidator(): ValidatorFn {
+    return (formGroup: AbstractControl): ValidationErrors | null => {
+      let errors: any = {};
+  
+      this.fields.forEach(field => {
+        const fromDateControl = formGroup.get(`${field.key}_fromDate`);
+        const toDateControl = formGroup.get(`${field.key}_toDate`);
+  
+        if (!fromDateControl || !toDateControl) return;
+  
+        const fromDate = fromDateControl.value ? new Date(fromDateControl.value) : null;
+        const toDate = toDateControl.value ? new Date(toDateControl.value) : null;
+  
+        // Skip validation if either field is missing (let required validation handle it)
+        if (!fromDate || !toDate) return;
+  
+        if (fromDate > toDate) {
+          // Assign custom error without overriding existing required errors
+          const fromErrors = fromDateControl.errors || {};
+          fromErrors['invalidDateRange'] = true;
+          fromDateControl.setErrors(fromErrors);
+  
+          const toErrors = toDateControl.errors || {};
+          toErrors['invalidDateRange'] = true;
+          toDateControl.setErrors(toErrors);
+  
+          // Also add to the form's overall error object
+          errors[`${field.key}_invalidDateRange`] = "From Date cannot be later than To Date.";
+        } else {
+          // Only clear dateRange error if it exists, without removing required errors
+          if (fromDateControl.errors?.['invalidDateRange']) {
+            const { invalidDateRange, ...otherErrors } = fromDateControl.errors;
+            fromDateControl.setErrors(Object.keys(otherErrors).length ? otherErrors : null);
+          }
+          if (toDateControl.errors?.['invalidDateRange']) {
+            const { invalidDateRange, ...otherErrors } = toDateControl.errors;
+            toDateControl.setErrors(Object.keys(otherErrors).length ? otherErrors : null);
+          }
+        }
+      });
+  
+      return Object.keys(errors).length > 0 ? errors : null;
+    };
+  }
+  
+
+  
+  
+  
     // Async Validator for checking `studyId`
     checkStudyIdValidator(control: AbstractControl) {
       if (!control.value) {
@@ -340,17 +394,20 @@ export class StudyFormComponent implements OnInit {
     
     if (studyIdValid || studyNameValid) {
       const formData = this.studyForm.getRawValue(); // Include disabled fields like studyId
-  
+  console.log("formData",formData);
       // Convert `fields` to match DynamoDB's structure
       const formattedFields = Object.keys(formData)
         .filter((key) => key !== 'studyId' && key !== 'studyName' && key !== 'uId') // Exclude non-field keys
-        .filter((key) => !key.endsWith('_comment')) // Handle comments separately
+        .filter((key) => !key.endsWith('_comment') && !key.endsWith('_icdpUsers') && !key.endsWith('_fromDate') && !key.endsWith('_toDate')) // Handle comments separately
         .map((key) => ({
           M: {
-            key: { S: key }, // Form key (from the form)
-            label: { S: this.fields.find((field) => field.key === key)?.label || '' },
-            status: { S: formData[key] }, // Get updated status value from form
-            comment: { S: formData[key + '_comment'] || '' }, // Get updated comment from form
+        key: { S: key }, // Form key (from the form)
+        label: { S: this.fields.find((field) => field.key === key)?.label || '' },
+        comment: { S: formData[key + '_comment'] || '' }, // Get updated comment from form
+        status: { S: formData[key] }, // Get updated status value from form
+        fromDate: { S: formData[key + '_fromDate'] },
+        toDate: { S: formData[key + '_toDate'] },
+        icdp_users: { S: formData[key + '_icdpUsers'] },
           },
         }));
   
@@ -363,17 +420,17 @@ export class StudyFormComponent implements OnInit {
         updatedAt: { S: new Date().toISOString() }, // Capture update timestamp
       };
   
-      console.log('Updated Study Data:', updatedStudyData);
+      console.log('adding Study Data:', updatedStudyData);
   
       // Submit the updated data to the service
       this.studyService.saveStudyData(updatedStudyData).subscribe({
         next: () => {
-          alert('Study data updated successfully');
+          alert('Study data added successfully');
           this.studyForm.reset();
         },
         error: (error) => {
-          alert('Error updating study data');
-          console.error('Error updating study data:', error);
+          alert('Error in adding study data');
+          console.error('Error in adding study data:', error);
         },
       });
     }
@@ -411,4 +468,6 @@ export class StudyFormComponent implements OnInit {
       this.commentExpanded[field.key] = true;
     }
   }
+
+
 }

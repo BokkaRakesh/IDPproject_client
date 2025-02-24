@@ -43,10 +43,11 @@ private computeStatusMetrics(study: any): { [key: string]: { count: number, name
   });
   
   (study.fields?.L || []).forEach((field: any) => {
+    const keyValue = field.M?.key?.S || '';
     const status = field.M?.status?.S || '';
     const label = field.M?.label?.S || '';
     
-    if (statusOrder.includes(status)) {
+    if (statusOrder.includes(status) && keyValue !== 'requestNewData') {
       statusCounts[status].count += 1;
       statusCounts[status].names.push(label);
     }

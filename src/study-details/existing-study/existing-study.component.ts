@@ -398,8 +398,11 @@ export class ExistingStudyComponent implements OnInit {
   computeStatusMetrics(study: any): { [key: string]: number } {
     const statusCounts: { [key: string]: number } = {};
     (study.fields?.L || []).forEach((field: any) => {
+      const keyValue = field.M?.key?.S || ''
       const status = field.M?.status?.S || '';
-      statusCounts[status] = (statusCounts[status] || 0) + 1;
+      if (keyValue !== 'requestNewData') {
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      }
     });
     return statusCounts;
   }

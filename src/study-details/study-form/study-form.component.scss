@@ -99,4 +99,20 @@
   .form-group {
     margin-bottom: 15px;
   }
+  .textarea-container {
+    position: relative;
+    display: inline-block;
+    width: 100%; /* Adjust width as needed */
+  }
+  
+
+  
+  .info-icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;  /* Adjust as needed */
+    font-size: 18px;
+    cursor: pointer;
+  }
+  
 }

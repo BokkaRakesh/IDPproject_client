@@ -107,8 +107,17 @@
           Comments
         </button>
 
-        <textarea *ngIf="commentExpanded[field.key]" placeholder="Add comment"
-          [formControlName]="field.key + '_comment'" class="form-control text-area-block"></textarea>
+        <div class="textarea-container" *ngIf="commentExpanded[field.key]">
+          <textarea placeholder="Add comment"
+                    [formControlName]="field.key + '_comment'" 
+                    class="form-control text-area-block">
+          </textarea>
+          <a href="https://docs.google.com/spreadsheets/d/1s_4mlWXCGhomzjT-2ZqMY-feRrSJLwRgDoW9-Xd6Asc/edit?gid=891423897#gid=891423897" 
+          target="_blank" 
+          class="info-icon-link">
+         <i class="bi bi-info-circle text-info info-icon" title="For more information, click the icon"></i>
+       </a>
+        </div>
       </div>
     </div>
   </div>

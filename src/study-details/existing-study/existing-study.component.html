@@ -199,13 +199,20 @@
           Comments
         </button>
 
-        <div *ngIf="isCommentExpanded[field.M.key.S]">
+        <div class="textarea-container" *ngIf="isCommentExpanded[field.M.key.S]">
           <textarea
             placeholder="Add comment"
             formControlName="{{ field.M.key.S + '_comment' }}"
             class="form-control text-area-block"
             [disabled]="!isEditable"
           ></textarea>
+          <a  href="https://docs.google.com/spreadsheets/d/1s_4mlWXCGhomzjT-2ZqMY-feRrSJLwRgDoW9-Xd6Asc/edit?gid=891423897#gid=891423897" 
+          target="_blank" 
+          [class.disabled-link]="!isEditable"
+          (click)="!isEditable ? $event.preventDefault() : null"
+          class="info-icon-link">
+         <i class="bi bi-info-circle text-info info-icon" title="For more information, click the icon"></i>
+       </a>
         </div>
       </div>
     </div>
